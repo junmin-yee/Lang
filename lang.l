@@ -31,7 +31,7 @@ int Return(int val);
     /* NOTE: You do not need to use definitions */
 identifier      [_a-zA-Z][_a-zA-Z0-9]*
 intconst        [1-9][0-9]*
-floatconst      [1-9][0-9]*.[0-9][1-9]*
+floatconst      [1-9][0-9]*"."[0-9][1-9]*
 comment         "//".*
 whitespace      [\t \n]
 %%
