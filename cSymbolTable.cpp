@@ -13,7 +13,7 @@
 // Define global symbol table.
 cSymbolTable g_symbolTable;
 
-cSymbolTable::cSymbolTable() : m_currentScope(nullptr), m_symbolTable()
+cSymbolTable::cSymbolTable() : m_currentScope(nullptr)
 {
     // Create initial scope
     symbolTable_t temp;
@@ -22,7 +22,7 @@ cSymbolTable::cSymbolTable() : m_currentScope(nullptr), m_symbolTable()
     m_symbolTable.push_back(temp);
 
     // Assign current scope
-    m_currentScope = m_symbolTable.back();
+    m_currentScope = &m_symbolTable.back();
 }
 
 symbolTable_t * cSymbolTable::IncreaseScope()
@@ -34,7 +34,7 @@ symbolTable_t * cSymbolTable::IncreaseScope()
     m_symbolTable.push_back(temp);
 
     // Update current scope
-    m_currentScope = m_symbolTable.back();
+    m_currentScope = &m_symbolTable.back();
 
     // Return reference to new scope
     return m_currentScope;
@@ -46,7 +46,7 @@ symbolTable_t * cSymbolTable::DecreaseScope()
     m_symbolTable.pop_back();
 
     // Update current scope
-    m_currentScope = m_symbolTable.back();
+    m_currentScope = &m_symbolTable.back();
 
     // Return reference to current scope
     return m_currentScope;
@@ -55,7 +55,7 @@ symbolTable_t * cSymbolTable::DecreaseScope()
 void cSymbolTable::Insert(cSymbol * sym)
 {
     // Insert symbol into current scope
-    m_currentScope->insert(sym->GetName(), sym);
+    m_currentScope->emplace(sym->GetName(), sym);
 }
 
 cSymbol * cSymbolTable::Find(string name)
@@ -66,14 +66,19 @@ cSymbol * cSymbolTable::Find(string name)
     // Iterate from innermost scope outwards
     // If nothing found, exits loop as nullptr
     for (list<symbolTable_t>::reverse_iterator rit = m_symbolTable.rbegin();
-        rit != m_symbolTable.rend() && temp == nullptr; ++rit) 
+        rit != m_symbolTable.rend(); ++rit) 
     {
         // Search each scope using key
         symbolTable_t::iterator search = rit->find(name);
 
         // Check if anything found
         if (search != rit->end())
+        {
             temp = search->second; // Assign if found
+
+            // Bail out once symbol is found
+            return temp;
+        }
     }
 
     return temp;

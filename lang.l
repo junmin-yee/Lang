@@ -9,7 +9,7 @@
 
 #include "lex.h"
 #include "tokens.h"
-
+#include "cSymbolTable.h"
 // Macros that can be used to create debug output from the scanner
 // The first one does NOT create debug output, the second does.
 // Uncomment one or the other then use DO_RETURN(val) for all your return 
@@ -40,11 +40,11 @@ whitespace      [\t \n]
 "("                         DO_RETURN('(');
 ")"                         DO_RETURN(')');
 "{"                         {
-                                IncreaseScope();
+                                g_symbolTable.IncreaseScope();
                                 return yytext[0];
                             }
 "}"                         {
-                                DecreaseScope();
+                                g_symbolTable.DecreaseScope();
                                 return yytext[0];
                             }
 "["                         DO_RETURN('[');
@@ -75,9 +75,13 @@ whitespace      [\t \n]
 "array"                     DO_RETURN(ARRAY);
 "return"                    DO_RETURN(RETURN);
 {identifier}                {
-                                yylval.symbol = FindLocal(yytext);
+                                yylval.symbol = g_symbolTable.FindLocal(yytext);
                                 if (yylval.symbol == nullptr)
-                                    Insert(yytext);
+                                {
+                                    cSymbol * temp = new cSymbol(yytext);
+                                    g_symbolTable.Insert(temp);
+                                    yylval.symbol = temp;
+                                }
                                 return IDENTIFIER;
                             }
 {intconst}                  DO_RETURN(INT_VAL);

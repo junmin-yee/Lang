@@ -16,9 +16,9 @@
 using std::unordered_map;
 using std::list;
 
-typedef unordered_map<string, cSymbol *> symbolTable_t
+typedef unordered_map<string, cSymbol *> symbolTable_t;
 
-public class cSymbolTable
+class cSymbolTable
 {
     public:
         // Create a symbol table
@@ -51,9 +51,8 @@ public class cSymbolTable
         cSymbol *FindLocal(string name);
 
     protected:
-        list<symbolTable_t> m_symbolTable;      // the symbol table 
         symbolTable_t * m_currentScope;         // keeps track of current scope
-        // ask Phil why Increase/Decrease must return a pointer
+        list<symbolTable_t> m_symbolTable;      // the symbol table 
 };
 
 // Declaration for the global symbol table.

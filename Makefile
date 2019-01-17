@@ -12,6 +12,7 @@
 COPTS=-Wall -g -c -O0 -std=c++11
 OBJS=main.o \
 	 langlex.o \
+	 	cSymbolTable.o
 
 all: lang
 
