@@ -5,14 +5,20 @@
 // Defines a nested symbol table.
 // Individual levels of the symbol table use a std::unordered_map from the STL
 //
-// Author: Phil Howard 
-// phil.howard@oit.edu
+// Author: Junmin Yee 
+// junmin.yee@oit.edu
 //
 //
-
+#include <unordered_map>
+#include <list>
 #include "cSymbol.h"
 
-class cSymbolTable
+using std::unordered_map;
+using std::list;
+
+typedef unordered_map<string, cSymbol *> symbolTable_t
+
+public class cSymbolTable
 {
     public:
         // Create a symbol table
@@ -43,6 +49,11 @@ class cSymbolTable
         // Return the symbol if found.
         // Returns nullptr if the symbol is not found.
         cSymbol *FindLocal(string name);
+
+    protected:
+        list<symbolTable_t> m_symbolTable;      // the symbol table 
+        symbolTable_t * m_currentScope;         // keeps track of current scope
+        // ask Phil why Increase/Decrease must return a pointer
 };
 
 // Declaration for the global symbol table.

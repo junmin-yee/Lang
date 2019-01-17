@@ -4,8 +4,8 @@
 // Main routine for lang compiler.
 // This version only runs the lexer
 //
-// Author: Phil Howard 
-// phil.howard@oit.edu
+// Author: Junmin Yee
+// junmin.yee@oit.edu
 //
 
 #include <stdio.h>
@@ -17,10 +17,6 @@
 #include "cSymbolTable.h"
 #include "lex.h"
 #include "tokens.h"
-
-// Define the global symbol table.
-// If we had a cSymbolTable.cpp, this would go there
-cSymbolTable g_symbolTable;
 
 // Define the cSymbol nextId static member
 long long cSymbol::nextId = 0;
@@ -35,7 +31,7 @@ int main(int argc, char **argv)
     int result = 0;
     int token;
 
-    std::cout << "Philip Howard" << std::endl;
+    std::cout << "Junmin Yee" << std::endl;
 
     if (argc > 1)
     {

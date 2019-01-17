@@ -39,8 +39,14 @@ whitespace      [\t \n]
     // token definitions. I gave "program" as an example
 "("                         DO_RETURN('(');
 ")"                         DO_RETURN(')');
-"{"                         DO_RETURN('{');
-"}"                         DO_RETURN('}');
+"{"                         {
+                                IncreaseScope();
+                                return yytext[0];
+                            }
+"}"                         {
+                                DecreaseScope();
+                                return yytext[0];
+                            }
 "["                         DO_RETURN('[');
 "]"                         DO_RETURN(']');
 ";"                         DO_RETURN(';');
@@ -68,7 +74,12 @@ whitespace      [\t \n]
 "struct"                    DO_RETURN(STRUCT);
 "array"                     DO_RETURN(ARRAY);
 "return"                    DO_RETURN(RETURN);
-{identifier}                DO_RETURN(IDENTIFIER);
+{identifier}                {
+                                yylval.symbol = FindLocal(yytext);
+                                if (yylval.symbol == nullptr)
+                                    Insert(yytext);
+                                return IDENTIFIER;
+                            }
 {intconst}                  DO_RETURN(INT_VAL);
 {floatconst}                DO_RETURN(FLOAT_VAL);
 {comment}                   {}
