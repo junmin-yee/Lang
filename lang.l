@@ -41,11 +41,11 @@ whitespace      [\t \n]
 ")"                         DO_RETURN(')');
 "{"                         {
                                 g_symbolTable.IncreaseScope();
-                                return yytext[0];
+                                DO_RETURN(yytext[0]);
                             }
 "}"                         {
                                 g_symbolTable.DecreaseScope();
-                                return yytext[0];
+                                DO_RETURN(yytext[0]);
                             }
 "["                         DO_RETURN('[');
 "]"                         DO_RETURN(']');
@@ -82,7 +82,7 @@ whitespace      [\t \n]
                                     g_symbolTable.Insert(temp);
                                     yylval.symbol = temp;
                                 }
-                                return IDENTIFIER;
+                                DO_RETURN(IDENTIFIER);
                             }
 {intconst}                  DO_RETURN(INT_VAL);
 {floatconst}                DO_RETURN(FLOAT_VAL);
