@@ -9,14 +9,11 @@
 // junmin.yee@oit.edu
 //
 //
-#include <unordered_map>
 #include <list>
+#include "symbolTable_t.h"
 #include "cSymbol.h"
 
-using std::unordered_map;
 using std::list;
-
-typedef unordered_map<string, cSymbol *> symbolTable_t;
 
 class cSymbolTable
 {
@@ -51,7 +48,6 @@ class cSymbolTable
         cSymbol *FindLocal(string name);
 
     protected:
-        symbolTable_t * m_currentScope;         // keeps track of current scope
         list<symbolTable_t> m_symbolTable;      // the symbol table 
 };
 

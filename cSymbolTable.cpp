@@ -13,16 +13,13 @@
 // Define global symbol table.
 cSymbolTable g_symbolTable;
 
-cSymbolTable::cSymbolTable() : m_currentScope(nullptr)
+cSymbolTable::cSymbolTable() 
 {
     // Create initial scope
     symbolTable_t temp;
 
     // Add to symbol table
     m_symbolTable.push_back(temp);
-
-    // Assign current scope
-    m_currentScope = &m_symbolTable.back();
 }
 
 symbolTable_t * cSymbolTable::IncreaseScope()
@@ -33,11 +30,8 @@ symbolTable_t * cSymbolTable::IncreaseScope()
     // Add scope to symbol table
     m_symbolTable.push_back(temp);
 
-    // Update current scope
-    m_currentScope = &m_symbolTable.back();
-
     // Return reference to new scope
-    return m_currentScope;
+    return &m_symbolTable.back();
 }
 
 symbolTable_t * cSymbolTable::DecreaseScope()
@@ -45,17 +39,14 @@ symbolTable_t * cSymbolTable::DecreaseScope()
     // Delete scope from symbol table
     m_symbolTable.pop_back();
 
-    // Update current scope
-    m_currentScope = &m_symbolTable.back();
-
     // Return reference to current scope
-    return m_currentScope;
+    return &m_symbolTable.back();;
 }
 
 void cSymbolTable::Insert(cSymbol * sym)
 {
     // Insert symbol into current scope
-    m_currentScope->emplace(sym->GetName(), sym);
+    m_symbolTable.back().Insert(sym);
 }
 
 cSymbol * cSymbolTable::Find(string name)
@@ -68,17 +59,10 @@ cSymbol * cSymbolTable::Find(string name)
     for (list<symbolTable_t>::reverse_iterator rit = m_symbolTable.rbegin();
         rit != m_symbolTable.rend(); ++rit) 
     {
-        // Search each scope using key
-        symbolTable_t::iterator search = rit->find(name);
-
-        // Check if anything found
-        if (search != rit->end())
-        {
-            temp = search->second; // Assign if found
-
-            // Bail out once symbol is found
-            return temp;
-        }
+        // Find locally 
+        temp = rit->Find(name);
+        if (temp) // Check if not null
+            return temp; // Bail out if found
     }
 
     return temp;
@@ -86,16 +70,7 @@ cSymbol * cSymbolTable::Find(string name)
 
 cSymbol * cSymbolTable::FindLocal(string name)
 {
-    // Create temp symbol pointer
-    cSymbol * temp = nullptr;
-    
-    // Search using key
-    symbolTable_t::iterator search = m_currentScope->find(name);
-
-    // Check if anything found
-    if (search != m_currentScope->end())
-        temp = search->second; // Assign if found
-
-    return temp;
+    // Call specific find on table
+    return m_symbolTable.back().Find(name);
 }
 
