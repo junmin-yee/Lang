@@ -8,8 +8,7 @@
 //
 
 #include "lex.h"
-#include "tokens.h"
-#include "cSymbolTable.h"
+#include "langparse.h"
 // Macros that can be used to create debug output from the scanner
 // The first one does NOT create debug output, the second does.
 // Uncomment one or the other then use DO_RETURN(val) for all your return 
@@ -39,14 +38,8 @@ whitespace      [\t \n]
     // token definitions. I gave "program" as an example
 "("                         DO_RETURN('(');
 ")"                         DO_RETURN(')');
-"{"                         {
-                                g_symbolTable.IncreaseScope();
-                                DO_RETURN(yytext[0]);
-                            }
-"}"                         {
-                                g_symbolTable.DecreaseScope();
-                                DO_RETURN(yytext[0]);
-                            }
+"{"                         DO_RETURN('{');
+"}"                         DO_RETURN('}');
 "["                         DO_RETURN('[');
 "]"                         DO_RETURN(']');
 ";"                         DO_RETURN(';');
@@ -68,9 +61,9 @@ whitespace      [\t \n]
 "endif"                     DO_RETURN(ENDIF);
 "while"                     DO_RETURN(WHILE);
 "print"                     DO_RETURN(PRINT);
-"int"                       DO_RETURN(INT);
-"float"                     DO_RETURN(FLOAT);
-"char"                      DO_RETURN(CHAR);
+        /* "int"                       DO_RETURN(INT); */
+        /* "float"                     DO_RETURN(FLOAT); */
+        /* "char"                      DO_RETURN(CHAR); */
 "struct"                    DO_RETURN(STRUCT);
 "array"                     DO_RETURN(ARRAY);
 "return"                    DO_RETURN(RETURN);
