@@ -11,15 +11,26 @@
 #include "cSymbolTable.h"
 
 // Define global symbol table.
-cSymbolTable g_symbolTable;
+//cSymbolTable g_symbolTable;
 
 cSymbolTable::cSymbolTable() 
 {
-    // Create initial scope
-    symbolTable_t temp;
+    IncreaseScope();
 
-    // Add to symbol table
-    m_symbolTable.push_back(temp);
+    // Create type symbols 
+    cSymbol * char_symbol = new cSymbol("char");
+    char_symbol->SetType(true);
+
+    cSymbol * int_symbol = new cSymbol("int");
+    int_symbol->SetType(true);
+
+    cSymbol * float_symbol = new cSymbol("float");
+    float_symbol->SetType(true);
+
+    // Insert types into outermost scope of symbol table
+    Insert(char_symbol);
+    Insert(int_symbol);
+    Insert(float_symbol);
 }
 
 symbolTable_t * cSymbolTable::IncreaseScope()

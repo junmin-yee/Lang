@@ -8,6 +8,7 @@
 //
 
 #include "lex.h"
+#include "astnodes.h"
 #include "langparse.h"
 // Macros that can be used to create debug output from the scanner
 // The first one does NOT create debug output, the second does.
@@ -61,24 +62,33 @@ whitespace      [\t \n]
 "endif"                     DO_RETURN(ENDIF);
 "while"                     DO_RETURN(WHILE);
 "print"                     DO_RETURN(PRINT);
-        /* "int"                       DO_RETURN(INT); */
-        /* "float"                     DO_RETURN(FLOAT); */
-        /* "char"                      DO_RETURN(CHAR); */
 "struct"                    DO_RETURN(STRUCT);
 "array"                     DO_RETURN(ARRAY);
 "return"                    DO_RETURN(RETURN);
 {identifier}                {
-                                yylval.symbol = g_symbolTable.FindLocal(yytext);
+                                yylval.symbol = g_SymbolTable.Find(yytext);
                                 if (yylval.symbol == nullptr)
                                 {
                                     cSymbol * temp = new cSymbol(yytext);
-                                    g_symbolTable.Insert(temp);
                                     yylval.symbol = temp;
                                 }
-                                DO_RETURN(IDENTIFIER);
+                                if (yylval.symbol->IsType())
+                                {
+                                    DO_RETURN(TYPE_ID);
+                                }
+                                else
+                                {
+                                    DO_RETURN(IDENTIFIER);
+                                }
                             }
-{intconst}                  DO_RETURN(INT_VAL);
-{floatconst}                DO_RETURN(FLOAT_VAL);
+{intconst}                  {
+                                yylval.int_val = atoi(yytext);
+                                DO_RETURN(INT_VAL);
+                            }
+{floatconst}                {
+                                yylval.float_val = atof(yytext);
+                                DO_RETURN(FLOAT_VAL);
+                            }
 {comment}                   {}
 {whitespace}                {}
 .                           DO_RETURN(JUNK_TOKEN);

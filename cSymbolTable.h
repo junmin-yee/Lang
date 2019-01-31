@@ -53,4 +53,4 @@ class cSymbolTable
 
 // Declaration for the global symbol table.
 // Definition is in main.cpp
-extern cSymbolTable g_symbolTable;
+extern cSymbolTable g_SymbolTable;

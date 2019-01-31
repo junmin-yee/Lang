@@ -13,19 +13,19 @@
 #include <stdlib.h>
 #include <iostream>
 #include <fstream>
-//#include "cSymbolTable.h"
+#include "cSymbolTable.h"
 #include "lex.h"
 #include "astnodes.h"
 #include "langparse.h"
 
 // define global variables
-//cSymbolTable g_SymbolTable;
+cSymbolTable g_SymbolTable;
 long long cSymbol::nextId;
 
 // takes two string args: input_file, and output_file
 int main(int argc, char **argv)
 {
-    std::cout << "Philip Howard" << std::endl;
+    std::cout << "Junmin Yee" << std::endl;
 
     const char *outfile_name;
     int result = 0;
