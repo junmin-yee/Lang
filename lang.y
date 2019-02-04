@@ -70,9 +70,9 @@
 %type <var_decl_node> var_decl
 %type <ast_node> struct_decl
 %type <ast_node> array_decl
-%type <ast_node> func_decl
+%type <symbol_table> func_decl
 %type <ast_node> func_header
-%type <ast_node> func_prefix
+%type <symbol_table> func_prefix
 %type <ast_node> func_call
 %type <ast_node> paramsspec
 %type <ast_node> paramspec
@@ -119,16 +119,16 @@ array_decl: ARRAY TYPE_ID '[' INT_VAL ']' IDENTIFIER
                                 {  }
 
 func_decl:  func_header ';'
-                                {  }
+                                { $$ = g_SymbolTable.DecreaseScope(); }
         |   func_header  '{' decls stmts '}'
-                                {  }
+                                { $$ = g_SymbolTable.DecreaseScope(); }
         |   func_header  '{' stmts '}'
-                                {  }
+                                { $$ = g_SymbolTable.DecreaseScope(); }
 func_header: func_prefix paramsspec ')'
                                 {  }
         |    func_prefix ')'    {  }
 func_prefix: TYPE_ID IDENTIFIER '('
-                                {  }
+                                { $$ = g_SymbolTable.IncreaseScope(); }
 paramsspec: paramsspec',' paramspec 
                                 {  }
         |   paramspec           {  }

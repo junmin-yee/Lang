@@ -28,8 +28,8 @@ class cVarDeclNode : public cDeclNode
 
             // Check if in local scope
             cSymbol * temp;
-            temp = g_SymbolTable.FindLocal(name->GetName());
-            if (temp == nullptr)
+            temp = g_SymbolTable.Find(name->GetName());
+            if (temp) //If found
             {
                 temp = new cSymbol(name->GetName());
                 g_SymbolTable.Insert(temp);
