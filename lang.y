@@ -24,7 +24,7 @@
     cProgramNode*   program_node;
     cBlockNode*     block_node;
     cStmtsNode*     stmts_node;
-    cPrintNode*     stmt_node;
+    cStmtNode*      stmt_node;
     cExprNode*      expr_node;
     cIntExprNode*   int_node;
     cFloatExprNode* float_node;
@@ -78,7 +78,7 @@
 %type <ast_node> paramspec
 %type <stmts_node> stmts
 %type <stmt_node> stmt
-%type <ast_node> lval
+%type <var_expr_node> lval
 %type <ast_node> params
 %type <ast_node> param
 %type <expr_node> expr
@@ -112,8 +112,7 @@ decl:       var_decl ';'        { $$ = $1; }
         |   func_decl           {  }
         |   error ';'           {  }
 
-var_decl:   TYPE_ID IDENTIFIER  { $$ = new cVarDeclNode($1, $2);
-                                  g_SymbolTable.Insert($2); }
+var_decl:   TYPE_ID IDENTIFIER  { $$ = new cVarDeclNode($1, $2); }
 struct_decl:  STRUCT open decls close IDENTIFIER    
                                 {  }
 array_decl: ARRAY TYPE_ID '[' INT_VAL ']' IDENTIFIER
@@ -140,18 +139,18 @@ stmts:      stmts stmt          { $$->Insert($2); }
         |   stmt                { $$ = new cStmtsNode($1); }
 
 stmt:       IF '(' expr ')' stmts ENDIF ';'
-                                {  }
+                                { $$ = new cIfNode($3, $5, nullptr); }
         |   IF '(' expr ')' stmts ELSE stmts ENDIF ';'
-                                {  }
+                                { $$ = new cIfNode($3, $5, $7); }
         |   WHILE '(' expr ')' stmt 
-                                {  }
+                                { $$ = new cWhileNode($3, $5); }
         |   PRINT '(' expr ')' ';'
                                 { $$ = new cPrintNode($3); }
-        |   lval '=' expr ';'   {  }
+        |   lval '=' expr ';'   { $$ = new cAssignNode($1, $3); }
         |   lval '=' func_call ';'   {  }
         |   func_call ';'       {  }
         |   block               {  }
-        |   RETURN expr ';'     {  }
+        |   RETURN expr ';'     { $$ = new cReturnNode($2); }
         |   error ';'           {}
 
 func_call:  IDENTIFIER '(' params ')' {  }
@@ -163,7 +162,7 @@ varref:   varref '.' varpart    {  }
 
 varpart:  IDENTIFIER            {  }
 
-lval:     varref                {  }
+lval:     varref                { $$ = new cVarExprNode($1); }
 
 params:     params',' param     {  }
         |   param               {  }
@@ -182,7 +181,7 @@ term:       term '*' fact       { $$ = new cBinaryExprNode($1, '*', $3); }
         |   term '%' fact       { $$ = new cBinaryExprNode($1, '%', $3); }
         |   fact                {  }
 
-fact:        '(' expr ')'       {  }
+fact:        '(' expr ')'       { $$ = $2; }
         |   INT_VAL             { $$ = new cIntExprNode($1); }
         |   FLOAT_VAL           { $$ = new cFloatExprNode($1); }
         |   varref              { $$ = new cVarExprNode($1); }

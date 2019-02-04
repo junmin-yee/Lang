@@ -10,7 +10,7 @@
 // Author: Phil Howard 
 //
 // Edited by: Junmin Yee
-// Date: Jan. 31, 2019
+// Date: Feb. 3, 2019
 //
 
 #include "cAstNode.h"
@@ -25,7 +25,21 @@ class cVarDeclNode : public cDeclNode
             : cDeclNode()
         {
             AddChild(type);
-            AddChild(name);
+
+            // Check if in local scope
+            cSymbol * temp;
+            temp = g_SymbolTable.FindLocal(name->GetName());
+            if (temp == nullptr)
+            {
+                temp = new cSymbol(name->GetName());
+                g_SymbolTable.Insert(temp);
+                AddChild(temp);
+            }
+            else
+            {
+                g_SymbolTable.Insert(name);
+                AddChild(name);
+            }
         }
 
         virtual string NodeType() { return string("var_decl"); }
