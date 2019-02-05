@@ -34,6 +34,11 @@
     cDeclsNode*     decls_node;
     cVarDeclNode*   var_decl_node;
     cVarExprNode*   var_expr_node;
+    cStructDeclNode* struct_decl_node;
+    cParamsNode*    params_node;
+    cParamListNode* param_list_node;
+    cFuncDeclNode*  func_decl_node;
+    cFuncExprNode*  func_expr_node;
     }
 
 %{
@@ -68,7 +73,7 @@
 %type <decls_node> decls
 %type <decl_node> decl
 %type <var_decl_node> var_decl
-%type <ast_node> struct_decl
+%type <struct_decl_node> struct_decl
 %type <ast_node> array_decl
 %type <symbol_table> func_decl
 %type <ast_node> func_header
@@ -85,7 +90,7 @@
 %type <expr_node> addit
 %type <expr_node> term
 %type <expr_node> fact
-%type <symbol> varref
+%type <var_expr_node> varref
 %type <symbol> varpart
 
 %%
@@ -107,14 +112,14 @@ close:  '}'                     { $$ = g_SymbolTable.DecreaseScope(); }
 decls:      decls decl          { $$->Insert($2); }
         |   decl                { $$ = new cDeclsNode($1); }
 decl:       var_decl ';'        { $$ = $1; }
-        |   struct_decl ';'     {  }
+        |   struct_decl ';'     { $$ = $1; }
         |   array_decl ';'      {  }
         |   func_decl           {  }
         |   error ';'           {  }
 
 var_decl:   TYPE_ID IDENTIFIER  { $$ = new cVarDeclNode($1, $2); }
 struct_decl:  STRUCT open decls close IDENTIFIER    
-                                {  }
+                                { $$ = new cStructDeclNode($3, $5); }
 array_decl: ARRAY TYPE_ID '[' INT_VAL ']' IDENTIFIER
                                 {  }
 
@@ -156,13 +161,13 @@ stmt:       IF '(' expr ')' stmts ENDIF ';'
 func_call:  IDENTIFIER '(' params ')' {  }
         |   IDENTIFIER '(' ')'  {  }
 
-varref:   varref '.' varpart    {  }
+varref:   varref '.' varpart    { $$->Insert($3); }
         | varref '[' expr ']'   {  }
-        | varpart               {  }
+        | varpart               { $$ = new cVarExprNode($1); }
 
 varpart:  IDENTIFIER            {  }
 
-lval:     varref                { $$ = new cVarExprNode($1); }
+lval:     varref                { $$ = $1; }
 
 params:     params',' param     {  }
         |   param               {  }
@@ -184,7 +189,7 @@ term:       term '*' fact       { $$ = new cBinaryExprNode($1, '*', $3); }
 fact:        '(' expr ')'       { $$ = $2; }
         |   INT_VAL             { $$ = new cIntExprNode($1); }
         |   FLOAT_VAL           { $$ = new cFloatExprNode($1); }
-        |   varref              { $$ = new cVarExprNode($1); }
+        |   varref              { $$ = $1; }
 
 %%
 
