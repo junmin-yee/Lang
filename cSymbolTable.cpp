@@ -13,6 +13,8 @@
 // Define global symbol table.
 //cSymbolTable g_symbolTable;
 
+//***************************************
+// cSymbolTable ctor
 cSymbolTable::cSymbolTable() 
 {
     IncreaseScope();
@@ -33,6 +35,8 @@ cSymbolTable::cSymbolTable()
     Insert(float_symbol);
 }
 
+//**************************************
+// Increase scope of symbol table
 symbolTable_t * cSymbolTable::IncreaseScope()
 {
     // Create new scope 
@@ -45,6 +49,8 @@ symbolTable_t * cSymbolTable::IncreaseScope()
     return &m_symbolTable.back();
 }
 
+//**************************************
+// Decrease scope of symbol table
 symbolTable_t * cSymbolTable::DecreaseScope()
 {
     // Delete scope from symbol table
@@ -54,12 +60,16 @@ symbolTable_t * cSymbolTable::DecreaseScope()
     return &m_symbolTable.back();;
 }
 
+//**************************************
+// Insert a symbol into symbol table
 void cSymbolTable::Insert(cSymbol * sym)
 {
     // Insert symbol into current scope
     m_symbolTable.back().Insert(sym);
 }
 
+//**************************************
+// Find a symbol in the symbol table
 cSymbol * cSymbolTable::Find(string name)
 {
     // Create temp symbol pointer
@@ -79,6 +89,8 @@ cSymbol * cSymbolTable::Find(string name)
     return temp;
 }
 
+//****************************************
+// Find a symbol in current scope
 cSymbol * cSymbolTable::FindLocal(string name)
 {
     // Call specific find on table

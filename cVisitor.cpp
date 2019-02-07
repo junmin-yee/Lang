@@ -39,16 +39,30 @@ void cVisitor::VisitAllChildren(cAstNode *node)
 //******************************************
 // All AST node types need a Visit method. 
 // The code for each method is identical: simply visit all children
+void cVisitor::Visit(cArrayDeclNode *node)    { VisitAllChildren(node); }
+void cVisitor::Visit(cAssignNode *node)       { VisitAllChildren(node); }
 void cVisitor::Visit(cAstNode *node)          { VisitAllChildren(node); }
+void cVisitor::Visit(cBinaryExprNode *node)   { VisitAllChildren(node); }
 void cVisitor::Visit(cBlockNode *node)        { VisitAllChildren(node); }
 void cVisitor::Visit(cDeclNode *node)         { VisitAllChildren(node); }
 void cVisitor::Visit(cDeclsNode *node)        { VisitAllChildren(node); }
 void cVisitor::Visit(cExprNode *node)         { VisitAllChildren(node); }
+void cVisitor::Visit(cFloatExprNode *node)    { VisitAllChildren(node); }
+void cVisitor::Visit(cFuncDeclNode *node)     { VisitAllChildren(node); }
+void cVisitor::Visit(cFuncExprNode *node)     { VisitAllChildren(node); }
+void cVisitor::Visit(cIfNode *node)           { VisitAllChildren(node); }
 void cVisitor::Visit(cIntExprNode *node)      { VisitAllChildren(node); }
 void cVisitor::Visit(cOpNode *node)           { VisitAllChildren(node); }
+void cVisitor::Visit(cParamListNode *node)    { VisitAllChildren(node); }
+void cVisitor::Visit(cParamsNode *node)       { VisitAllChildren(node); }
 void cVisitor::Visit(cPrintNode *node)        { VisitAllChildren(node); }
 void cVisitor::Visit(cProgramNode *node)      { VisitAllChildren(node); }
+void cVisitor::Visit(cReturnNode *node)       { VisitAllChildren(node); }
 void cVisitor::Visit(cStmtNode *node)         { VisitAllChildren(node); }
 void cVisitor::Visit(cStmtsNode *node)        { VisitAllChildren(node); }
+void cVisitor::Visit(cStructDeclNode *node)   { VisitAllChildren(node); }
 void cVisitor::Visit(cSymbol *node)           { VisitAllChildren(node); }
+void cVisitor::Visit(cVarDeclNode *node)      { VisitAllChildren(node); }
+void cVisitor::Visit(cVarExprNode *node)      { VisitAllChildren(node); }
+void cVisitor::Visit(cWhileNode *node)        { VisitAllChildren(node); }
 

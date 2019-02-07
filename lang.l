@@ -4,7 +4,7 @@
 //
 // scanner definition file. flex uses this file to create the scanner
 //
-// Author: <<<< Junmin Yee >>>>
+// Author: Junmin Yee 
 //
 
 #include "lex.h"

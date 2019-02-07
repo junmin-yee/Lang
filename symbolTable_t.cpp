@@ -8,17 +8,23 @@
 //
 #include "symbolTable_t.h"
 
+//*******************************************
+// Wrapper class ctor
 symbolTable_t::symbolTable_t()
 {
     // Calls unordered_map ctor
 }
 
+//*******************************************
+// Insert a symbol into the unordered map
 void symbolTable_t::Insert(cSymbol * sym)
 {
     // Insert symbol into table
     m_symbolTable_t.emplace(sym->GetName(), sym);
 }
 
+//*******************************************
+// Find a symbol in the unordered map
 cSymbol * symbolTable_t::Find(string name)
 {
     // Create temp symbol pointer

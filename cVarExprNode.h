@@ -23,13 +23,13 @@ class cVarExprNode : public cExprNode
         }
 
         // Add symbol to the list
-        void Insert(cSymbol *sym)
+        void InsertField(cSymbol *sym)
         {
             AddChild(sym);
         }
 
         // Add expr to the list
-        void Insert(cExprNode *expr)
+        void InsertIndex(cExprNode *expr)
         {
             AddChild(expr);
         }
