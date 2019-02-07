@@ -21,6 +21,7 @@
 #include "cDeclsNode.h"
 #include "cVarDeclNode.h"
 #include "cStructDeclNode.h"
+#include "cArrayDeclNode.h"
 #include "cParamsNode.h"
 #include "cParamListNode.h"
 #include "cFuncDeclNode.h"

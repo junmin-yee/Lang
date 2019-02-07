@@ -24,16 +24,30 @@ class cFuncDeclNode : public cDeclNode
         // params initial return type and name, params, 
         // local declarations, and code statements
         cFuncDeclNode(cSymbol *type, cSymbol *name, cParamsNode *params,
-                    cDeclsNode *local, cStmtsNode *stmts)
+                    cDeclsNode *decls, cStmtsNode *stmts)
             : cDeclNode()
         {
             AddChild(type);
+            g_SymbolTable.Insert(name);
             AddChild(name);
             AddChild(params);
-            AddChild(local);
+            AddChild(decls);
             AddChild(stmts);
         }
 
         virtual string NodeType() { return string("func"); }
         virtual void Visit(cVisitor *visitor) { visitor->Visit(this); }
+
+        void SetParams(cParamsNode *params)
+        {
+            SetChild(2, params);
+        }
+        void SetDecls(cDeclsNode *decls)
+        {
+            SetChild(3, decls);
+        }
+        void SetStmts(cStmtsNode *stmts)
+        {
+            SetChild(4, stmts);
+        }
 };

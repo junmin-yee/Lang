@@ -40,10 +40,20 @@ class cAstNode
         bool HasChildren()      { return !m_children.empty(); }
 
         int NumChildren()       { return (int)m_children.size(); }
+
         cAstNode* GetChild(int child)
         {
             if (child >= (int)m_children.size()) return nullptr;
             return m_children[child];
+        }
+
+
+        void SetChild(int child, cAstNode* node)
+        {
+            if (child < (int)m_children.size()) 
+            {
+                m_children[child] = node;
+            }
         }
 
         // return a string representation of the node
@@ -76,7 +86,7 @@ class cAstNode
         virtual string NodeType() = 0; //      { return "AST"; }
         virtual void Visit(cVisitor *visitor) = 0;
 
-    protected:
+    private:
         vector<cAstNode *> m_children;     // list of AST nodes for children
 
 };
