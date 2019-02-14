@@ -12,6 +12,11 @@
 #include "cSymbolTable.h"
 #include "astnodes.h"
 
+#define CHECK_ERROR() { if (g_semanticErrorHappened) \
+    { g_semanticErrorHappened = false; } }
+#define PROP_ERROR() { if (g_semanticErrorHappened) \
+    { g_semanticErrorHappened = false; } }
+
 %}
 
 %locations
@@ -125,31 +130,35 @@ array_decl: ARRAY TYPE_ID '[' INT_VAL ']' IDENTIFIER
                                 { $$ = new cArrayDeclNode($2, $4, $6); }
 
 func_decl:  func_header ';'
-                                { g_SymbolTable.DecreaseScope(); }
+                                { $$ = $1;
+                                  g_SymbolTable.DecreaseScope(); 
+                                }
         |   func_header  '{' decls stmts '}'
-                                { $$->SetDecls($3);
+                                { $$ = $1;
+                                  $$->SetDecls($3);
                                   $$->SetStmts($4);
                                   g_SymbolTable.DecreaseScope(); 
                                 }
         |   func_header  '{' stmts '}'
-                                { $$->SetStmts($3);
+                                { $$ = $1;
+                                  $$->SetStmts($3);
                                   g_SymbolTable.DecreaseScope(); 
                                 }
 func_header: func_prefix paramsspec ')'
-                                { $$->SetParams($2); }
-        |    func_prefix ')'    {  }
+                                { $$ = $1; $$->SetParams($2); }
+        |    func_prefix ')'    { $$ = $1; }
 func_prefix: TYPE_ID IDENTIFIER '('
                                 { $$ = new cFuncDeclNode($1, $2, nullptr,
                                         nullptr, nullptr);
                                   g_SymbolTable.IncreaseScope(); 
                                 }
 paramsspec: paramsspec',' paramspec 
-                                { $$->Insert($3); }
+                                { $$ = $1; $$->Insert($3); }
         |   paramspec           { $$ = new cParamsNode($1); }
 
-paramspec:  var_decl            {  }
+paramspec:  var_decl            { $$ = $1; }
 
-stmts:      stmts stmt          { $$->Insert($2); }
+stmts:      stmts stmt          { $$ = $1; $$->Insert($2); }
         |   stmt                { $$ = new cStmtsNode($1); }
 
 stmt:       IF '(' expr ')' stmts ENDIF ';'
@@ -163,37 +172,37 @@ stmt:       IF '(' expr ')' stmts ENDIF ';'
         |   lval '=' expr ';'   { $$ = new cAssignNode($1, $3); }
         |   lval '=' func_call ';'   { $$ = new cAssignNode($1, $3); }
         |   func_call ';'       { $$ = $1; }
-        |   block               {  }
+        |   block               { $$ = $1; }
         |   RETURN expr ';'     { $$ = new cReturnNode($2); }
-        |   error ';'           {}
+        |   error ';'           {  }
 
 func_call:  IDENTIFIER '(' params ')' { $$ = new cFuncExprNode($1, $3); }
         |   IDENTIFIER '(' ')'  { $$ = new cFuncExprNode($1, nullptr); }
 
-varref:   varref '.' varpart    { $$->InsertField($3); }
-        | varref '[' expr ']'   { $$->InsertIndex($3); }
+varref:   varref '.' varpart    { $$ = $1; $$->InsertField($3); }
+        | varref '[' expr ']'   { $$ = $1; $$->InsertIndex($3); }
         | varpart               { $$ = new cVarExprNode($1); }
 
-varpart:  IDENTIFIER            {  }
+varpart:  IDENTIFIER            { $$ = $1; }
 
 lval:     varref                { $$ = $1; }
 
-params:     params',' param     { $$->Insert($3); }
+params:     params',' param     { $$ = $1; $$->Insert($3); }
         |   param               { $$ = new cParamListNode($1); }
 
-param:      expr                {  }
+param:      expr                { $$ = $1; }
 
 expr:       expr EQUALS addit   { $$ = new cBinaryExprNode($1, EQUALS, $3); }
         |   addit               { $$ = $1; }
 
 addit:      addit '+' term      { $$ = new cBinaryExprNode($1, '+', $3); }
         |   addit '-' term      { $$ = new cBinaryExprNode($1, '-', $3); }
-        |   term                {  }
+        |   term                { $$ = $1; }
 
 term:       term '*' fact       { $$ = new cBinaryExprNode($1, '*', $3); }
         |   term '/' fact       { $$ = new cBinaryExprNode($1, '/', $3); }
         |   term '%' fact       { $$ = new cBinaryExprNode($1, '%', $3); }
-        |   fact                {  }
+        |   fact                { $$ = $1; }
 
 fact:        '(' expr ')'       { $$ = $2; }
         |   INT_VAL             { $$ = new cIntExprNode($1); }
@@ -209,4 +218,13 @@ int yyerror(const char *msg)
         << yytext << " on line " << yylineno << "\n";
 
     return 0;
+}
+
+// Function that gets called when a semantic error happens
+void SemanticError(std::string error)
+{
+    std::cout << "ERROR: " << error << " on line "
+              << yylineno << "\n";
+    g_semanticErrorHappened = true;
+    yynerrs++;
 }
