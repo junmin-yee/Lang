@@ -12,6 +12,7 @@
 #include <list>
 #include "symbolTable_t.h"
 #include "cSymbol.h"
+#include "cBaseTypeNode.h"
 
 using std::list;
 

@@ -28,11 +28,21 @@ class cFuncDeclNode : public cDeclNode
             : cDeclNode()
         {
             AddChild(type);
+            name->SetDecl(this);
             g_SymbolTable.Insert(name);
             AddChild(name);
             AddChild(params);
             AddChild(decls);
             AddChild(stmts);
+        }
+
+        virtual cDeclNode * GetType()
+        {
+            return this;
+        }
+        virtual string GetName()
+        {
+            return GetFuncType()->GetDecl()->GetName();
         }
 
         virtual string NodeType() { return string("func"); }
@@ -49,5 +59,10 @@ class cFuncDeclNode : public cDeclNode
         void SetStmts(cStmtsNode *stmts)
         {
             SetChild(4, stmts);
+        }
+
+        cSymbol * GetFuncType()
+        {
+            return dynamic_cast<cSymbol*>(GetChild(0));
         }
 };

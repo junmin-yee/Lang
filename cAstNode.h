@@ -18,23 +18,13 @@ using std::vector;
 class cAstNode
 {
     public:
-        typedef vector<cAstNode*>::iterator iterator;
-
         cAstNode() {}
 
+
+    protected:
         void AddChild(cAstNode *child)
         {
             m_children.push_back(child);
-        }
-
-        iterator FirstChild()
-        {
-            return m_children.begin();
-        }
-
-        iterator LastChild()
-        {
-            return m_children.end();
         }
 
         bool HasChildren()      { return !m_children.empty(); }
@@ -54,6 +44,23 @@ class cAstNode
             {
                 m_children[child] = node;
             }
+        }
+
+        virtual string AttributesToString()   { return string(""); }
+        virtual string NodeType() = 0; //      { return "AST"; }
+
+    public:
+        // NOTE: the iterators are only allowed in the cVisitor class
+        typedef vector<cAstNode*>::iterator iterator;
+
+        iterator FirstChild()
+        {
+            return m_children.begin();
+        }
+
+        iterator LastChild()
+        {
+            return m_children.end();
         }
 
         // return a string representation of the node
@@ -82,8 +89,6 @@ class cAstNode
             return result;
         }
 
-        virtual string AttributesToString()   { return string(""); }
-        virtual string NodeType() = 0; //      { return "AST"; }
         virtual void Visit(cVisitor *visitor) = 0;
 
     private:

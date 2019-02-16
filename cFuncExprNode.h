@@ -27,6 +27,21 @@ class cFuncExprNode : public cExprNode
             AddChild(params);
         }
 
+        virtual cDeclNode * GetType()
+        {
+            //if (GetFirstChild()->GetDecl()->IsFloat())
+            //    return g_SymbolTable.Find("float")->GetDecl();
+            //else if (GetFirstChild()->GetDecl()->Size() == 4)
+            //    return g_SymbolTable.Find("int")->GetDecl();
+            //else
+            //    return g_SymbolTable.Find("char")->GetDecl();
+            return nullptr;
+        }
+
         virtual string NodeType() { return string("funcCall"); }
         virtual void Visit(cVisitor *visitor) { visitor->Visit(this); }
+        cSymbol *GetFirstChild()
+        {
+            return static_cast<cSymbol*>(GetChild(0));
+        }
 };

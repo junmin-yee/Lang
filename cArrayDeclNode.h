@@ -28,8 +28,18 @@ class cArrayDeclNode : public cDeclNode
 
             // Set as type and add to symbol table
             name->SetType(true);
+            name->SetDecl(this);
             g_SymbolTable.Insert(name);
             AddChild(name);
+        }
+        
+        virtual cDeclNode * GetType()
+        {
+            return this;
+        }
+        virtual string GetName()
+        {
+            return GetArrayName()->GetName();
         }
 
         virtual string AttributesToString()
@@ -38,6 +48,10 @@ class cArrayDeclNode : public cDeclNode
         }
         virtual string NodeType() { return string("array_decl"); }
         virtual void Visit(cVisitor *visitor) { visitor->Visit(this); }
+        cSymbol * GetArrayName()
+        {
+            return dynamic_cast<cSymbol*>(GetChild(2));
+        }
 
     protected:
         int m_size;         // size of array

@@ -16,6 +16,7 @@
 using std::string;
 
 #include "cAstNode.h"
+#include "cDeclNode.h"
 
 class cSymbol : public cAstNode
 {
@@ -51,9 +52,21 @@ class cSymbol : public cAstNode
         {
             m_type = type;
         }
+
+        // getters and setters for decl
+        cDeclNode * GetDecl()
+        {
+            return m_decl;
+        }
+
+        void SetDecl(cDeclNode * decl)
+        {
+            m_decl = decl;
+        }
     protected:
         static long long nextId;        // Next avail symbol ID
         long long m_id;                 // Unique ID for this symbol
+        cDeclNode *m_decl;              // declaration attribute for symbol
         string m_name;                  // name of symbol
         bool m_type;                    // whether it is type or identifier
                                         // true is type, false is identifier

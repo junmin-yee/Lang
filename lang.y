@@ -50,6 +50,8 @@
 %{
     int yyerror(const char *msg);
 
+    static bool g_semanticErrorHappened = false;
+
     cAstNode *yyast_root;
 %}
 
@@ -123,7 +125,7 @@ decl:       var_decl ';'        { $$ = $1; }
         |   func_decl           { $$ = $1; }
         |   error ';'           {  }
 
-var_decl:   TYPE_ID IDENTIFIER  { $$ = new cVarDeclNode($1, $2); }
+var_decl:   TYPE_ID IDENTIFIER  { $$ = new cVarDeclNode($1, $2); PROP_ERROR(); }
 struct_decl:  STRUCT open decls close IDENTIFIER    
                                 { $$ = new cStructDeclNode($3, $5); }
 array_decl: ARRAY TYPE_ID '[' INT_VAL ']' IDENTIFIER
@@ -169,8 +171,8 @@ stmt:       IF '(' expr ')' stmts ENDIF ';'
                                 { $$ = new cWhileNode($3, $5); }
         |   PRINT '(' expr ')' ';'
                                 { $$ = new cPrintNode($3); }
-        |   lval '=' expr ';'   { $$ = new cAssignNode($1, $3); }
-        |   lval '=' func_call ';'   { $$ = new cAssignNode($1, $3); }
+        |   lval '=' expr ';'   { $$ = new cAssignNode($1, $3); PROP_ERROR(); }
+        |   lval '=' func_call ';'   { $$ = new cAssignNode($1, $3); PROP_ERROR(); }
         |   func_call ';'       { $$ = $1; }
         |   block               { $$ = $1; }
         |   RETURN expr ';'     { $$ = new cReturnNode($2); }
@@ -181,7 +183,7 @@ func_call:  IDENTIFIER '(' params ')' { $$ = new cFuncExprNode($1, $3); }
 
 varref:   varref '.' varpart    { $$ = $1; $$->InsertField($3); }
         | varref '[' expr ']'   { $$ = $1; $$->InsertIndex($3); }
-        | varpart               { $$ = new cVarExprNode($1); }
+        | varpart               { $$ = new cVarExprNode($1); PROP_ERROR(); }
 
 varpart:  IDENTIFIER            { $$ = $1; }
 

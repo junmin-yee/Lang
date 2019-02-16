@@ -19,15 +19,21 @@ cSymbolTable::cSymbolTable()
 {
     IncreaseScope();
 
-    // Create type symbols 
+    // Create type symbols
+    cBaseTypeNode * char_type = new cBaseTypeNode("char", 1, false); 
     cSymbol * char_symbol = new cSymbol("char");
     char_symbol->SetType(true);
+    char_symbol->SetDecl(char_type);
 
+    cBaseTypeNode * int_type = new cBaseTypeNode("int", 4, false);
     cSymbol * int_symbol = new cSymbol("int");
     int_symbol->SetType(true);
+    int_symbol->SetDecl(int_type);
 
+    cBaseTypeNode * float_type = new cBaseTypeNode("float", 8, true);
     cSymbol * float_symbol = new cSymbol("float");
     float_symbol->SetType(true);
+    float_symbol->SetDecl(float_type);
 
     // Insert types into outermost scope of symbol table
     Insert(char_symbol);

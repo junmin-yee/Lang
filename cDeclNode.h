@@ -8,11 +8,21 @@
 // Author: Phil Howard 
 // phil.howard@oit.edu
 //
-
+#include <string>
+using std::string;
 #include "cAstNode.h"
 
 class cDeclNode : public cAstNode
 {
     public:
         cDeclNode() : cAstNode() {}
+
+        virtual bool IsVar() { return false; }
+        virtual bool IsFloat() { return false; }
+        virtual int Size() { return 0; }
+        virtual bool IsFunc() { return false; }
+        virtual bool IsStruct() { return false; }
+
+        virtual cDeclNode * GetType() = 0;
+        virtual string GetName() = 0;
 };

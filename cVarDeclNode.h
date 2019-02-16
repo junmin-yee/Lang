@@ -12,7 +12,8 @@
 // Edited by: Junmin Yee
 // Date: Feb. 3, 2019
 //
-
+#include <string>
+using std::string;
 #include "cAstNode.h"
 #include "cDeclNode.h"
 #include "cSymbol.h"
@@ -24,6 +25,13 @@ class cVarDeclNode : public cDeclNode
         cVarDeclNode(cSymbol *type, cSymbol *name)
             : cDeclNode()
         {
+            if (g_SymbolTable.FindLocal(name->GetName()))
+            {
+                string error = "Symbol " + name->GetName() + 
+                    " already defined in current scope";
+                SemanticError(error);
+            }
+            
             AddChild(type);
 
             // Check if in local scope
@@ -32,24 +40,36 @@ class cVarDeclNode : public cDeclNode
             if (temp) //If found
             {
                 temp = new cSymbol(name->GetName());
+                temp->SetDecl(this);
                 g_SymbolTable.Insert(temp);
                 AddChild(temp);
             }
             else
             {
+                name->SetDecl(this);
                 g_SymbolTable.Insert(name);
                 AddChild(name);
             }
+        }
+
+        virtual cDeclNode * GetType()
+        {
+            return GetSymbolType()->GetDecl();
+        }
+
+        virtual string GetName()
+        {
+            return GetSymbolType()->GetName();
         }
 
         virtual string NodeType() { return string("var_decl"); }
         virtual void Visit(cVisitor *visitor) { visitor->Visit(this); }
         cSymbol *GetSymbolType()
         {
-            return static_cast<cSymbol*>(GetChild(0));
+            return dynamic_cast<cSymbol*>(GetChild(0));
         }
         cSymbol *GetSymbolName()
         {
-            return static_cast<cSymbol*>(GetChild(1));
+            return dynamic_cast<cSymbol*>(GetChild(1));
         }
 };
