@@ -38,12 +38,14 @@ class cFuncDeclNode : public cDeclNode
 
         virtual cDeclNode * GetType()
         {
-            return this;
+            return GetFuncType()->GetDecl();
         }
         virtual string GetName()
         {
             return GetFuncType()->GetDecl()->GetName();
         }
+
+        virtual bool IsFunc() { return true; }
 
         virtual string NodeType() { return string("func"); }
         virtual void Visit(cVisitor *visitor) { visitor->Visit(this); }

@@ -45,14 +45,14 @@ class cBinaryExprNode : public cExprNode
         virtual void Visit(cVisitor *visitor) { visitor->Visit(this); }
         cExprNode *GetExprLeft()
         {
-            return static_cast<cExprNode*>(GetChild(0));
+            return dynamic_cast<cExprNode*>(GetChild(0));
         }
         cOpNode *GetOp()
         {
-            return static_cast<cOpNode*>(GetChild(1));
+            return dynamic_cast<cOpNode*>(GetChild(1));
         }
         cExprNode *GetExprRight()
         {
-            return static_cast<cExprNode*>(GetChild(2));
+            return dynamic_cast<cExprNode*>(GetChild(2));
         }
 };

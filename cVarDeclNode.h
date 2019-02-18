@@ -59,8 +59,12 @@ class cVarDeclNode : public cDeclNode
 
         virtual string GetName()
         {
-            return GetSymbolType()->GetName();
+            return GetSymbolType()->GetDecl()->GetName();
         }
+
+        virtual bool IsVar() { return true; }
+        virtual bool IsFloat() { return GetSymbolType()->GetDecl()->IsFloat(); }
+        virtual int Size() { return GetSymbolType()->GetDecl()->Size(); }
 
         virtual string NodeType() { return string("var_decl"); }
         virtual void Visit(cVisitor *visitor) { visitor->Visit(this); }

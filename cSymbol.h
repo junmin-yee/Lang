@@ -27,6 +27,7 @@ class cSymbol : public cAstNode
             m_id = ++nextId;        // get next available ID
             m_name = name;
             m_type = false;         // auto create as false
+            m_decl = nullptr;
         }
 
         // return name of symbol

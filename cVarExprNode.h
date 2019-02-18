@@ -44,12 +44,7 @@ class cVarExprNode : public cExprNode
 
         virtual cDeclNode * GetType()
         {
-            if (GetLastChild()->GetDecl()->IsFloat())
-                return g_SymbolTable.Find("float")->GetDecl();
-            else if (GetLastChild()->GetDecl()->Size() == 4)
-                return g_SymbolTable.Find("int")->GetDecl();
-            else 
-                return g_SymbolTable.Find("char")->GetDecl();
+            return GetLastChild()->GetDecl()->GetType();
         }
 
         virtual string NodeType() { return string("varref"); }

@@ -26,12 +26,12 @@ class cAssignNode : public cStmtNode
         cAssignNode(cVarExprNode *ref, cExprNode *expr)
             : cStmtNode()
         {
-            //if (ref->GetType() != expr->GetType())
-            //{
-            //    string error = "Cannot assign " + ref->GetType()->GetName() + 
-            //        " to " + expr->GetType()->GetName();
-            //    SemanticError(error);
-            //}
+            if (!CheckAssignmentType(ref, expr))
+            {
+                string error = "Cannot assign " + expr->GetType()->GetName() + 
+                    " to " + ref->GetType()->GetName();
+                SemanticError(error);
+            }
 
             AddChild(ref);
             AddChild(expr);
@@ -39,4 +39,32 @@ class cAssignNode : public cStmtNode
 
         virtual string NodeType() { return string("assign"); }
         virtual void Visit(cVisitor *visitor) { visitor->Visit(this); }
+
+    private:
+        // Check assignment types
+        bool CheckAssignmentType(cVarExprNode *ref, cExprNode *expr)
+        {
+            // Check if types are different
+            if (ref->GetType() != expr->GetType())
+            {
+                // Test for promotion rules
+                if (ref->GetType()->GetName() == "int" &&
+                        expr->GetType()->GetName() == "char")
+                {
+                    return true;
+                }
+                else if (ref->GetType()->GetName() == "float" &&
+                        expr->GetType()->GetName() == "char")
+                {
+                    return true;
+                }
+                else if (ref->GetType()->GetName() == "float" &&
+                        expr->GetType()->GetName() == "int")
+                {
+                    return true;
+                }
+                return false;
+            }
+            return true;
+        }
 };
