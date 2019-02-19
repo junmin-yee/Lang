@@ -173,7 +173,7 @@ stmt:       IF '(' expr ')' stmts ENDIF ';'
                                 { $$ = new cPrintNode($3); }
         |   lval '=' expr ';'   { $$ = new cAssignNode($1, $3); CHECK_ERROR(); }
         |   lval '=' func_call ';'   { $$ = new cAssignNode($1, $3); CHECK_ERROR(); }
-        |   func_call ';'       { $$ = $1; }
+        |   func_call ';'       { $$ = $1; CHECK_ERROR(); }
         |   block               { $$ = $1; }
         |   RETURN expr ';'     { $$ = new cReturnNode($2); }
         |   error ';'           {  }

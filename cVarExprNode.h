@@ -20,7 +20,7 @@ class cVarExprNode : public cExprNode
         // param is first ref
         cVarExprNode(cSymbol *ref) : cExprNode()
         {
-            if (g_SymbolTable.FindLocal(ref->GetName()) == nullptr)
+            if (g_SymbolTable.Find(ref->GetName()) == nullptr)
             {
                 string error = "Symbol " + ref->GetName() + 
                     " not defined";

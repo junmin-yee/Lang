@@ -5,8 +5,10 @@
 // Defines base class for all declarations.
 // Future labs will add features to this class.
 //
-// Author: Phil Howard 
-// phil.howard@oit.edu
+// Author: Phil Howard
+//
+// Edited by: Junmin Yee
+// Date: Feb. 14, 2019 
 //
 #include <string>
 using std::string;

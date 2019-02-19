@@ -23,6 +23,11 @@ class cFuncExprNode : public cExprNode
         cFuncExprNode(cSymbol *name, cParamListNode *params)
             : cExprNode()
         {
+            if (!name->GetDecl()->IsFunc())
+            {
+                string error = (name->GetName() + " is not a function");
+                SemanticError(error);
+            }
             AddChild(name);
             AddChild(params);
         }
