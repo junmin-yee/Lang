@@ -28,4 +28,6 @@ class cParamListNode : public cAstNode
 
         virtual string NodeType() { return string("params"); }
         virtual void Visit(cVisitor *visitor) { visitor->Visit(this); }
+
+        int NumParams() { return NumChildren(); }
 };

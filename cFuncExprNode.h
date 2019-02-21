@@ -23,10 +23,39 @@ class cFuncExprNode : public cExprNode
         cFuncExprNode(cSymbol *name, cParamListNode *params)
             : cExprNode()
         {
-            if (!name->GetDecl()->IsFunc())
+            if (g_SymbolTable.Find(name->GetName()) == nullptr)
+            {
+                string error = (name->GetName() + " is not declared");
+                SemanticError(error);
+            }
+            else if (!name->GetDecl()->IsFunc())
             {
                 string error = (name->GetName() + " is not a function");
                 SemanticError(error);
+            }
+            else if (!dynamic_cast<cFuncDeclNode*>(name->GetDecl())->IsDefinition())
+            {
+                string error = (name->GetName() + " is not fully defined");
+                SemanticError(error);
+            }
+            else if (params) // If there are params
+            {
+                if (params->NumParams() != dynamic_cast<cFuncDeclNode*>(name->GetDecl())
+                        ->GetParams()->NumParams())
+                {
+                    string error = (name->GetName() + 
+                            " called with wrong number of arguments");
+                    SemanticError(error);
+                }
+            }
+            else if (params == nullptr)
+            {
+                if (dynamic_cast<cFuncDeclNode*>(name->GetDecl())->GetParams())
+                { 
+                    string error = (name->GetName() + 
+                            " called with wrong number of arguments");
+                    SemanticError(error);
+                }
             }
             AddChild(name);
             AddChild(params);

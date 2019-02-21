@@ -28,4 +28,12 @@ class cParamsNode : public cAstNode
 
         virtual string NodeType() { return string("args"); }
         virtual void Visit(cVisitor *visitor) { visitor->Visit(this); }
+
+        int NumParams() { return NumChildren(); } 
+        
+        cDeclNode * GetDecl(int index)
+        {
+            if(index >= NumParams()) return nullptr;
+            return dynamic_cast<cDeclNode*>(GetChild(index));
+        } 
 };

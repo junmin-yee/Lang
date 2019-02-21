@@ -137,21 +137,21 @@ func_decl:  func_header ';'
                                 }
         |   func_header  '{' decls stmts '}'
                                 { $$ = $1;
-                                  $$->SetDecls($3);
-                                  $$->SetStmts($4);
+                                  $$->SetDecls($3); 
+                                  $$->SetStmts($4); CHECK_ERROR(); 
                                   g_SymbolTable.DecreaseScope(); 
                                 }
         |   func_header  '{' stmts '}'
                                 { $$ = $1;
-                                  $$->SetStmts($3);
+                                  $$->SetStmts($3); CHECK_ERROR(); 
                                   g_SymbolTable.DecreaseScope(); 
                                 }
 func_header: func_prefix paramsspec ')'
-                                { $$ = $1; $$->SetParams($2); }
+                                { $$ = $1; $$->SetParams($2); CHECK_ERROR(); }
         |    func_prefix ')'    { $$ = $1; }
 func_prefix: TYPE_ID IDENTIFIER '('
                                 { $$ = new cFuncDeclNode($1, $2, nullptr,
-                                        nullptr, nullptr);
+                                        nullptr, nullptr); CHECK_ERROR();
                                   g_SymbolTable.IncreaseScope(); 
                                 }
 paramsspec: paramsspec',' paramspec 
