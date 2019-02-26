@@ -7,8 +7,6 @@
 // Author: Junmin Yee
 // Date: Feb. 14, 2019 
 //
-#include <string>
-using std::string;
 #include "cAstNode.h"
 #include "cDeclNode.h"
 
@@ -16,10 +14,10 @@ class cBaseTypeNode : public cDeclNode
 {
     public:
         // attribute inputs
-        cBaseTypeNode(string name, int size, bool isfloat) : cDeclNode()
+        cBaseTypeNode(string name, int typesize, bool isfloat) : cDeclNode()
         {
             m_name = name;
-            m_size = size;
+            m_typesize = typesize;
             isFloat = isfloat;
         }
 
@@ -28,11 +26,11 @@ class cBaseTypeNode : public cDeclNode
         {
             return m_name;
         }
-        int Size()
+        virtual int Size()
         {
-            return m_size;
+            return m_typesize;
         }
-        bool IsFloat()
+        virtual bool IsFloat()
         {
             return isFloat;
         }
@@ -46,6 +44,6 @@ class cBaseTypeNode : public cDeclNode
         virtual void Visit(cVisitor *visitor) { visitor->Visit(this); }
     protected:
         string m_name;          // name of base type
-        int m_size;             // size of type
+        int m_typesize;         // size of type
         bool isFloat;           // whether the type is a float
 };

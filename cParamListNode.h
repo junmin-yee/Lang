@@ -17,22 +17,12 @@ class cParamListNode : public cAstNode
         // first param in function
         cParamListNode(cExprNode *expr) : cAstNode()
         {
-            if (expr->GetType()->IsStruct())
-            {
-                string error = "Cannot assign a struct";
-                SemanticError(error);
-            }
             AddChild(expr);
         }
 
         // Add another param to the list
         void Insert(cExprNode *expr)
         {
-            if (expr->GetType()->IsStruct())
-            {
-                string error = "Cannot assign a struct";
-                SemanticError(error);
-            }
             AddChild(expr);
         }
 

@@ -19,5 +19,6 @@ class cExprNode : public cStmtNode
     public:
         cExprNode() : cStmtNode() {}
 
+        // Gets type of attached decl
         virtual cDeclNode *GetType() = 0;
 };

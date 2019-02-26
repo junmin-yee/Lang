@@ -12,8 +12,6 @@
 // Edited by: Junmin Yee
 // Date: Feb. 3, 2019
 //
-#include <string>
-using std::string;
 #include "cAstNode.h"
 #include "cDeclNode.h"
 #include "cSymbol.h"
@@ -68,7 +66,8 @@ class cVarDeclNode : public cDeclNode
         virtual bool IsStruct() { return GetTypeSymbol()->GetDecl()->IsStruct(); }
 
         virtual string NodeType() { return string("var_decl"); }
-        virtual void Visit(cVisitor *visitor) { visitor->Visit(this); }
+        virtual void Visit(cVisitor *visitor) { visitor->Visit(this); 
+        }
         cSymbol *GetTypeSymbol()
         {
             return dynamic_cast<cSymbol*>(GetChild(0));

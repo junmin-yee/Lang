@@ -11,10 +11,6 @@
 // Date: Jan. 31, 2019
 //
 
-#include <string>
-
-using std::string;
-
 #include "cAstNode.h"
 #include "cDeclNode.h"
 

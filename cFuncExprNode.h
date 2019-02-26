@@ -38,7 +38,7 @@ class cFuncExprNode : public cExprNode
                 string error = (name->GetName() + " is not fully defined");
                 SemanticError(error);
             }
-            else if (params) // If there are params
+            else if (params) // Check for different number of args
             {
                 if (params->NumParams() != dynamic_cast<cFuncDeclNode*>(name->GetDecl())
                         ->GetParams()->NumParams())
@@ -48,7 +48,7 @@ class cFuncExprNode : public cExprNode
                     SemanticError(error);
                 }
             }
-            else if (params == nullptr)
+            else if (params == nullptr) // Check case for different number of args
             {
                 if (dynamic_cast<cFuncDeclNode*>(name->GetDecl())->GetParams())
                 { 
@@ -68,6 +68,7 @@ class cFuncExprNode : public cExprNode
 
         virtual string NodeType() { return string("funcCall"); }
         virtual void Visit(cVisitor *visitor) { visitor->Visit(this); }
+
         cSymbol *GetFuncName()
         {
             return static_cast<cSymbol*>(GetChild(0));

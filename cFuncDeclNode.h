@@ -75,8 +75,6 @@ class cFuncDeclNode : public cDeclNode
         virtual string NodeType() { return string("func"); }
         virtual void Visit(cVisitor *visitor) { visitor->Visit(this); }
 
-        bool isDefinition;
-
         bool IsDefinition() { return isDefinition; }
         void SetDefinition(bool def) { isDefinition = def; }
 
@@ -166,4 +164,7 @@ class cFuncDeclNode : public cDeclNode
         {
             return dynamic_cast<cStmtsNode*>(GetChild(4));
         }
+
+    private:
+        bool isDefinition;
 };

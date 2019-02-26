@@ -11,8 +11,6 @@
 //
 // Date: Feb. 3, 2019
 //
-#include <string>
-using std::string;
 #include "cAstNode.h"
 #include "cStmtNode.h"
 #include "cExprNode.h"
@@ -26,11 +24,6 @@ class cAssignNode : public cStmtNode
         cAssignNode(cVarExprNode *ref, cExprNode *expr)
             : cStmtNode()
         {
-            //if (ref->GetType()->IsStruct())
-            //{
-            //    string error = "Cannot assign a struct";
-            //    SemanticError(error);
-            //}
             if (!CheckAssignmentType(ref, expr))
             {
                 string error = "Cannot assign " + expr->GetType()->GetName() + 

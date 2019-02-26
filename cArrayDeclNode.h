@@ -48,6 +48,7 @@ class cArrayDeclNode : public cDeclNode
         }
         virtual string NodeType() { return string("array_decl"); }
         virtual void Visit(cVisitor *visitor) { visitor->Visit(this); }
+
         cSymbol * GetArrayName()
         {
             return dynamic_cast<cSymbol*>(GetChild(2));

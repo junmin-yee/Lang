@@ -9,9 +9,6 @@
 // Author: Junmin Yee 
 // Date: Jan. 31, 2019
 //
-#include <string>
-using std::string;
-#include <iostream>
 #include "cExprNode.h"
 #include "cSymbol.h"
 
@@ -23,11 +20,9 @@ class cVarExprNode : public cExprNode
         {
             if (g_SymbolTable.Find(ref->GetName()) == nullptr)
             {
-                string error = "Symbol " + ref->GetName() + 
-                    " not defined";
+                string error = "Symbol " + ref->GetName() + " not defined";
                 SemanticError(error);
             }
-            
             AddChild(ref);
         }
 
@@ -53,7 +48,7 @@ class cVarExprNode : public cExprNode
                 }
                 else
                 {
-                    sym = temp;
+                    sym = temp; // Save symbol from above decls
                 }
             }
             AddChild(sym);
@@ -72,6 +67,7 @@ class cVarExprNode : public cExprNode
 
         virtual string NodeType() { return string("varref"); }
         virtual void Visit(cVisitor *visitor) { visitor->Visit(this); }
+
         cSymbol * GetLastChild()
         {
             return dynamic_cast<cSymbol*>(GetChild(NumChildren() - 1));

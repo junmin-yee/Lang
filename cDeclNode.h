@@ -10,8 +10,6 @@
 // Edited by: Junmin Yee
 // Date: Feb. 14, 2019 
 //
-#include <string>
-using std::string;
 #include "cAstNode.h"
 
 class cDeclNode : public cAstNode
@@ -19,12 +17,14 @@ class cDeclNode : public cAstNode
     public:
         cDeclNode() : cAstNode() {}
 
+        // Virtual functions for its subclasses
         virtual bool IsVar() { return false; }
         virtual bool IsFloat() { return false; }
         virtual int Size() { return 0; }
         virtual bool IsFunc() { return false; }
         virtual bool IsStruct() { return false; }
 
+        // Pure virtual functions for its subclasses
         virtual cDeclNode * GetType() = 0;
         virtual string GetName() = 0;
 };
