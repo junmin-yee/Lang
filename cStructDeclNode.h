@@ -14,12 +14,13 @@
 #include "cDeclNode.h"
 #include "cDeclsNode.h"
 #include "cSymbol.h"
+#include "symbolTable_t.h"
 
 class cStructDeclNode : public cDeclNode
 {
     public:
         // params are the list of decls and the struct name
-        cStructDeclNode(cDeclsNode *decls, cSymbol *name)
+        cStructDeclNode(cDeclsNode *decls, cSymbol *name, symbolTable_t * table)
             : cDeclNode()
         {
             AddChild(decls);
@@ -29,6 +30,9 @@ class cStructDeclNode : public cDeclNode
             name->SetDecl(this);
             g_SymbolTable.Insert(name);
             AddChild(name);
+
+            // Store symbol table scope
+            m_table = table;
         }
 
         virtual cDeclNode * GetType()
@@ -45,8 +49,19 @@ class cStructDeclNode : public cDeclNode
 
         virtual string NodeType() { return string("struct_decl"); }
         virtual void Visit(cVisitor *visitor) { visitor->Visit(this); }
+
+        
         cSymbol * GetStructName()
         {
             return dynamic_cast<cSymbol*>(GetChild(1));
         }
+
+        cSymbol * GetElement(string name)
+        {
+            return m_table->Find(name); // Check if name exists in struct
+        }
+
+    private:
+        // Member to store struct scope
+        symbolTable_t * m_table;
 };

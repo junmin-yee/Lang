@@ -49,7 +49,7 @@ class cSymbolTable
         cSymbol *FindLocal(string name);
 
     protected:
-        list<symbolTable_t> m_symbolTable;      // the symbol table 
+        list<symbolTable_t*> m_symbolTable;      // the symbol table 
 };
 
 // Declaration for the global symbol table.

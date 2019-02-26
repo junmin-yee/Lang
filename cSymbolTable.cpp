@@ -46,13 +46,13 @@ cSymbolTable::cSymbolTable()
 symbolTable_t * cSymbolTable::IncreaseScope()
 {
     // Create new scope 
-    symbolTable_t temp;
+    symbolTable_t * temp = new symbolTable_t();
 
     // Add scope to symbol table
     m_symbolTable.push_back(temp);
 
     // Return reference to new scope
-    return &m_symbolTable.back();
+    return m_symbolTable.back();
 }
 
 //**************************************
@@ -63,7 +63,7 @@ symbolTable_t * cSymbolTable::DecreaseScope()
     m_symbolTable.pop_back();
 
     // Return reference to current scope
-    return &m_symbolTable.back();;
+    return m_symbolTable.back();;
 }
 
 //**************************************
@@ -71,7 +71,7 @@ symbolTable_t * cSymbolTable::DecreaseScope()
 void cSymbolTable::Insert(cSymbol * sym)
 {
     // Insert symbol into current scope
-    m_symbolTable.back().Insert(sym);
+    m_symbolTable.back()->Insert(sym);
 }
 
 //**************************************
@@ -83,11 +83,11 @@ cSymbol * cSymbolTable::Find(string name)
 
     // Iterate from innermost scope outwards
     // If nothing found, exits loop as nullptr
-    for (list<symbolTable_t>::reverse_iterator rit = m_symbolTable.rbegin();
+    for (list<symbolTable_t*>::reverse_iterator rit = m_symbolTable.rbegin();
         rit != m_symbolTable.rend(); ++rit) 
     {
         // Find locally 
-        temp = rit->Find(name);
+        temp = (*rit)->Find(name);
         if (temp) // Check if not null
             return temp; // Bail out if found
     }
@@ -100,6 +100,6 @@ cSymbol * cSymbolTable::Find(string name)
 cSymbol * cSymbolTable::FindLocal(string name)
 {
     // Call specific find on table
-    return m_symbolTable.back().Find(name);
+    return m_symbolTable.back()->Find(name);
 }
 

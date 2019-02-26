@@ -54,25 +54,26 @@ class cVarDeclNode : public cDeclNode
 
         virtual cDeclNode * GetType()
         {
-            return GetSymbolType()->GetDecl();
+            return GetTypeSymbol()->GetDecl();
         }
 
         virtual string GetName()
         {
-            return GetSymbolType()->GetDecl()->GetName();
+            return GetTypeSymbol()->GetDecl()->GetName();
         }
 
         virtual bool IsVar() { return true; }
-        virtual bool IsFloat() { return GetSymbolType()->GetDecl()->IsFloat(); }
-        virtual int Size() { return GetSymbolType()->GetDecl()->Size(); }
+        virtual bool IsFloat() { return GetTypeSymbol()->GetDecl()->IsFloat(); }
+        virtual int Size() { return GetTypeSymbol()->GetDecl()->Size(); }
+        virtual bool IsStruct() { return GetTypeSymbol()->GetDecl()->IsStruct(); }
 
         virtual string NodeType() { return string("var_decl"); }
         virtual void Visit(cVisitor *visitor) { visitor->Visit(this); }
-        cSymbol *GetSymbolType()
+        cSymbol *GetTypeSymbol()
         {
             return dynamic_cast<cSymbol*>(GetChild(0));
         }
-        cSymbol *GetSymbolName()
+        cSymbol *GetNameSymbol()
         {
             return dynamic_cast<cSymbol*>(GetChild(1));
         }

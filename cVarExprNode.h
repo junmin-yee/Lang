@@ -11,6 +11,7 @@
 //
 #include <string>
 using std::string;
+#include <iostream>
 #include "cExprNode.h"
 #include "cSymbol.h"
 
@@ -33,6 +34,28 @@ class cVarExprNode : public cExprNode
         // Add symbol to the list
         void InsertField(cSymbol *sym)
         {
+            if(!GetLastChild()->GetDecl()->IsStruct())
+            {
+                string error = (GetName() + " is not a struct");
+                SemanticError(error);
+            }
+            else 
+            {
+                // Get the struct decl
+                cStructDeclNode * found = dynamic_cast<cStructDeclNode*>
+                    (GetLastChild()->GetDecl()->GetType());
+
+                cSymbol * temp = found->GetElement(sym->GetName());
+                if(temp == nullptr)
+                {
+                    string error = (sym->GetName() + " is not a field of " + GetName());
+                    SemanticError(error); 
+                }
+                else
+                {
+                    sym = temp;
+                }
+            }
             AddChild(sym);
         }
 
@@ -52,5 +75,17 @@ class cVarExprNode : public cExprNode
         cSymbol * GetLastChild()
         {
             return dynamic_cast<cSymbol*>(GetChild(NumChildren() - 1));
+        }
+
+        // Function to build the variable expression string
+        string GetName()
+        {
+            string name = dynamic_cast<cSymbol*>(GetChild(0))->GetName();
+            for(int i = 1; i < NumChildren(); i++)
+            {
+                name += ".";
+                name += dynamic_cast<cSymbol*>(GetChild(i))->GetName();
+            }
+            return name;
         }
 };

@@ -26,6 +26,11 @@ class cAssignNode : public cStmtNode
         cAssignNode(cVarExprNode *ref, cExprNode *expr)
             : cStmtNode()
         {
+            //if (ref->GetType()->IsStruct())
+            //{
+            //    string error = "Cannot assign a struct";
+            //    SemanticError(error);
+            //}
             if (!CheckAssignmentType(ref, expr))
             {
                 string error = "Cannot assign " + expr->GetType()->GetName() + 
