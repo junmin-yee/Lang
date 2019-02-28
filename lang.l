@@ -52,7 +52,7 @@ whitespace      [\t \n]
 "/"                         DO_RETURN('/');
 "%"                         DO_RETURN('%');
 "="                         DO_RETURN('=');
-"!="                        DO_RETURN(NOT_EQUALS);
+"!="                        DO_RETURN(NEQUALS);
 "=="                        DO_RETURN(EQUALS);
 "&&"                        DO_RETURN(AND);
 "||"                        DO_RETURN(OR);

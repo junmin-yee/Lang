@@ -30,7 +30,7 @@ class cOpNode : public cAstNode
                 case EQUALS:
                     result += "==";
                     break;
-                case NOT_EQUALS:
+                case NEQUALS:
                     result += "!=";
                     break;
                 case OR:

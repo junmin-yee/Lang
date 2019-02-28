@@ -62,16 +62,13 @@
 %token <int_val>   CHAR_VAL
 %token <int_val>   INT_VAL
 %token <float_val> FLOAT_VAL
-%token <int_val>   AND
-%token <int_val>   OR
-%token <int_val>   EQUALS
-%token <int_val>   NOT_EQUALS
 
 %token  PROGRAM
 %token  PRINT
 %token  WHILE IF ELSE ENDIF
 %token  STRUCT ARRAY
 %token  RETURN
+%token  AND OR NEQUALS EQUALS 
 %token  JUNK_TOKEN
 
 %type <program_node> program
@@ -95,6 +92,8 @@
 %type <param_list_node> params
 %type <expr_node> param
 %type <expr_node> expr
+%type <expr_node> and
+%type <expr_node> equal
 %type <expr_node> addit
 %type <expr_node> term
 %type <expr_node> fact
@@ -172,7 +171,6 @@ stmt:       IF '(' expr ')' stmts ENDIF ';'
         |   PRINT '(' expr ')' ';'
                                 { $$ = new cPrintNode($3); }
         |   lval '=' expr ';'   { $$ = new cAssignNode($1, $3); CHECK_ERROR(); }
-        |   lval '=' func_call ';'   { $$ = new cAssignNode($1, $3); CHECK_ERROR(); }
         |   func_call ';'       { $$ = $1; CHECK_ERROR(); }
         |   block               { $$ = $1; }
         |   RETURN expr ';'     { $$ = new cReturnNode($2); }
@@ -194,7 +192,14 @@ params:     params',' param     { $$ = $1; $$->Insert($3); }
 
 param:      expr                { $$ = $1; }
 
-expr:       expr EQUALS addit   { $$ = new cBinaryExprNode($1, EQUALS, $3); }
+expr:       expr OR and         { $$ = new cBinaryExprNode($1, OR, $3); }
+        |   and                 { $$ = $1; }
+
+and:        and AND equal       { $$ = new cBinaryExprNode($1, AND, $3); }
+        |   equal
+
+equal:      equal EQUALS addit  { $$ = new cBinaryExprNode($1, EQUALS, $3); }
+        |   equal NEQUALS addit { $$ = new cBinaryExprNode($1, NEQUALS, $3); }
         |   addit               { $$ = $1; }
 
 addit:      addit '+' term      { $$ = new cBinaryExprNode($1, '+', $3); }
@@ -210,6 +215,7 @@ fact:        '(' expr ')'       { $$ = $2; }
         |   INT_VAL             { $$ = new cIntExprNode($1); }
         |   FLOAT_VAL           { $$ = new cFloatExprNode($1); }
         |   varref              { $$ = $1; }
+        |   func_call           { $$ = $1; }
 
 %%
 
