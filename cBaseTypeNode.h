@@ -14,10 +14,10 @@ class cBaseTypeNode : public cDeclNode
 {
     public:
         // attribute inputs
-        cBaseTypeNode(string name, int typesize, bool isfloat) : cDeclNode()
+        cBaseTypeNode(string name, int size, bool isfloat) : cDeclNode()
         {
             m_name = name;
-            m_typesize = typesize;
+            SetSize(size);
             isFloat = isfloat;
         }
 
@@ -25,10 +25,6 @@ class cBaseTypeNode : public cDeclNode
         virtual string GetName()
         {
             return m_name;
-        }
-        virtual int Size()
-        {
-            return m_typesize;
         }
         virtual bool IsFloat()
         {
@@ -44,6 +40,5 @@ class cBaseTypeNode : public cDeclNode
         virtual void Visit(cVisitor *visitor) { visitor->Visit(this); }
     protected:
         string m_name;          // name of base type
-        int m_typesize;         // size of type
         bool isFloat;           // whether the type is a float
 };

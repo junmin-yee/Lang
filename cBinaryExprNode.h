@@ -34,8 +34,8 @@ class cBinaryExprNode : public cExprNode
             if (GetExprLeft()->GetType()->IsFloat() || 
                     GetExprRight()->GetType()->IsFloat())
                 return g_SymbolTable.Find("float")->GetDecl();
-            else if (GetExprLeft()->GetType()->Size() == 4 || 
-                        GetExprRight()->GetType()->Size() == 4)
+            else if (GetExprLeft()->GetType()->GetSize() == 4 || 
+                        GetExprRight()->GetType()->GetSize() == 4)
                 return g_SymbolTable.Find("int")->GetDecl();
             else
                 return g_SymbolTable.Find("char")->GetDecl();

@@ -26,6 +26,25 @@ class cDeclsNode : public cAstNode
             AddChild(decl);
         }
 
+        virtual string AttributesToString()
+        {
+            string result(" size=\"");
+            result += std::to_string(m_size);
+            result += "\"";
+            return result;
+        }
         virtual string NodeType() { return string("decls"); }
         virtual void Visit(cVisitor *visitor) { visitor->Visit(this); }
+
+        int NumDecls() { return NumChildren(); }
+        cDeclNode * GetDecl(int index) 
+        { 
+            return dynamic_cast<cDeclNode*>(GetChild(index)); 
+        }
+
+        int GetSize() { return m_size; }
+        void SetSize(int size) { m_size = size; }
+
+    protected:
+        int m_size;             // size of decls
 };

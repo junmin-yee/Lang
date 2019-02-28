@@ -48,6 +48,8 @@ class cVarDeclNode : public cDeclNode
                 g_SymbolTable.Insert(name);
                 AddChild(name);
             }
+
+            SetSize(GetType()->GetSize());
         }
 
         virtual cDeclNode * GetType()
@@ -62,7 +64,6 @@ class cVarDeclNode : public cDeclNode
 
         virtual bool IsVar() { return true; }
         virtual bool IsFloat() { return GetTypeSymbol()->GetDecl()->IsFloat(); }
-        virtual int Size() { return GetTypeSymbol()->GetDecl()->Size(); }
         virtual bool IsStruct() { return GetTypeSymbol()->GetDecl()->IsStruct(); }
 
         virtual string NodeType() { return string("var_decl"); }

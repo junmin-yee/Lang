@@ -17,6 +17,7 @@
 #include "lex.h"
 #include "astnodes.h"
 #include "langparse.h"
+#include "cComputeSize.h"
 
 // define global variables
 cSymbolTable g_SymbolTable;
@@ -63,6 +64,9 @@ int main(int argc, char **argv)
     {
         if (result == 0)
         {
+            cComputeSize sizer;
+            sizer.VisitAllNodes(yyast_root);
+            
             output << yyast_root->ToString() << std::endl;
         } else {
             output << yynerrs << " Errors in compile\n";
