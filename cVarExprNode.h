@@ -65,13 +65,13 @@ class cVarExprNode : public cExprNode
             return GetLastChild()->GetDecl()->GetType();
         }
 
+        cDeclNode * GetDecl()
+        {
+            return GetLastChild()->GetDecl();
+        }
+
         virtual string NodeType() { return string("varref"); }
         virtual void Visit(cVisitor *visitor) { visitor->Visit(this); }
-
-        cSymbol * GetLastChild()
-        {
-            return dynamic_cast<cSymbol*>(GetChild(NumChildren() - 1));
-        }
 
         // Function to build the variable expression string
         string GetName()
@@ -83,5 +83,11 @@ class cVarExprNode : public cExprNode
                 name += dynamic_cast<cSymbol*>(GetChild(i))->GetName();
             }
             return name;
+        }
+        
+    protected:
+        cSymbol * GetLastChild()
+        {
+            return dynamic_cast<cSymbol*>(GetChild(NumChildren() - 1));
         }
 };

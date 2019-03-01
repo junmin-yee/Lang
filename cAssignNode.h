@@ -24,7 +24,12 @@ class cAssignNode : public cStmtNode
         cAssignNode(cVarExprNode *ref, cExprNode *expr)
             : cStmtNode()
         {
-            if (!CheckAssignmentType(ref, expr))
+            if (!ref->GetDecl()->IsVar())
+            {
+                SemanticError(ref->GetDecl()->GetName() + 
+                        " is not an lval");
+            }
+            else if (!CheckAssignmentType(ref, expr))
             {
                 string error = "Cannot assign " + expr->GetType()->GetName() + 
                     " to " + ref->GetType()->GetName();
