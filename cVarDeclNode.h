@@ -48,8 +48,6 @@ class cVarDeclNode : public cDeclNode
                 g_SymbolTable.Insert(name);
                 AddChild(name);
             }
-
-            SetSize(GetType()->GetSize());
         }
 
         virtual cDeclNode * GetType()

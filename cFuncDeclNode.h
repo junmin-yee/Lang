@@ -27,38 +27,50 @@ class cFuncDeclNode : public cDeclNode
                     cDeclsNode *decls, cStmtsNode *stmts)
             : cDeclNode()
         {
-            isDefinition = false;
+            m_isDefinition = false;
+            m_hasParams = false;
             AddChild(type);
             AddChild(name);
+            AddChild(nullptr);
+            AddChild(nullptr);
+            AddChild(nullptr);
 
             cSymbol * temp = g_SymbolTable.Find(name->GetName());
-            if(temp)
+            
+            if(temp != nullptr)
             {
-                if(temp->GetDecl()->GetType() != type->GetDecl()->GetType())
+                cDeclNode * decl = temp->GetDecl();
+
+                if (!decl->IsFunc())
                 {
-                    string error = (name->GetName() + " previously defined with different"
-                        + " return type");
-                    SemanticError(error);
+                    SemanticError(name->GetName() + 
+                            " previously defined as other than a function");
                 }
-                // Copy stuff if previously defined
-                cFuncDeclNode * found = dynamic_cast<cFuncDeclNode*>(temp->GetDecl());
-                AddChild(found->GetParams());
-                AddChild(found->GetDecls());
-                AddChild(found->GetStmts());
-                if (found->IsDefinition())
+                else
                 {
-                    found->SetDefinition(false);
-                    isDefinition = true;
+                    cFuncDeclNode * funcDecl = dynamic_cast<cFuncDeclNode*>(decl);
+                    if (funcDecl->GetType() != type->GetDecl())
+                    {
+                        SemanticError(name->GetName() + 
+                                " previously defined with different return type");
+                    }
+                    else
+                    {
+                        for (int i = 0; i < NumChildren(); ++i)
+                        {
+                            SetChild(i, funcDecl->GetChild(i));
+                        }
+                        m_isDefinition = funcDecl->m_isDefinition;
+                        m_hasParams = funcDecl->m_hasParams;
+                        name->SetDecl(this);
+                    }
                 }
             }
             else
             {
-                AddChild(params);
-                AddChild(decls);
-                AddChild(stmts);
+                name->SetDecl(this);
+                g_SymbolTable.Insert(name);
             }
-            name->SetDecl(this);
-            g_SymbolTable.Insert(name);
         }
 
         virtual cDeclNode * GetType()
@@ -75,44 +87,38 @@ class cFuncDeclNode : public cDeclNode
         virtual string NodeType() { return string("func"); }
         virtual void Visit(cVisitor *visitor) { visitor->Visit(this); }
 
-        bool IsDefinition() { return isDefinition; }
-        void SetDefinition(bool def) { isDefinition = def; }
+        bool IsDefinition() { return m_isDefinition; }
+        void SetDefinition(bool def) { m_isDefinition = def; }
 
         void SetParams(cParamsNode *params)
         {
-            cSymbol * temp = g_SymbolTable.Find(GetFuncName()->GetName());
+            cParamsNode *old_params = GetParams();
 
-            // If symbol exists
-            if (temp)
+            if (m_hasParams && (params != nullptr || old_params != nullptr))
             {
-                cFuncDeclNode * found = dynamic_cast<cFuncDeclNode*>(temp->GetDecl());
-                // Check if previous definition has params
-                if(found->GetParams())
+                if ((params != nullptr && old_params == nullptr) ||
+                    (params == nullptr && old_params != nullptr) ||
+                    (params->NumParams() != old_params->NumParams()))
                 {
-                    // Check number of params
-                    if(found->GetParams()->NumParams() 
-                            != params->NumParams())
+                    string error = GetName() + 
+                        " redeclared with a different number of parameters";
+                    SemanticError(error);
+                    return;
+                }
+
+                for (int i = 0; i < params->NumParams(); ++i)
+                {
+                    if(params->GetDecl(i)->GetType() != 
+                            GetParams()->GetDecl(i)->GetType())
                     {
-                        string error = (GetFuncName()->GetName() + " redeclared with" + 
-                                " a different number of parameters");
+                        string error = (GetFuncName()->GetName() + 
+                                " previously defined with different parameters");
                         SemanticError(error);
-                    }
-                    else
-                    {
-                        for(int i = 0; i < params->NumParams(); ++i)
-                        {
-                            if(params->GetDecl(i)->GetType() != 
-                                    GetParams()->GetDecl(i)->GetType())
-                            {
-                                string error = (GetFuncName()->GetName() + 
-                                        " previously defined with different parameters");
-                                SemanticError(error);
-                            }
-                        }
                     }
                 }
             }
             SetChild(2, params);
+            m_hasParams = true;
         }
         void SetDecls(cDeclsNode *decls)
         {
@@ -120,24 +126,14 @@ class cFuncDeclNode : public cDeclNode
         }
         void SetStmts(cStmtsNode *stmts)
         {
-            cSymbol * temp = g_SymbolTable.Find(GetFuncName()->GetName());
-
-            // If symbol exists
-            if (temp)
+            if (m_isDefinition)
             {
-                cFuncDeclNode * found = dynamic_cast<cFuncDeclNode*>(temp->GetDecl());
-                if (found->IsDefinition())
-                {
-                    string error = (GetFuncName()->GetName() + 
-                            " already has a definition");
-                    SemanticError(error);
-                }
-                else 
-                {
-                    isDefinition = true;
-                }
+                SemanticError(GetName() + "already has a definition");
+                return;
             }
+            
             SetChild(4, stmts);
+            m_isDefinition = true;
         }
 
         cSymbol * GetFuncType()
@@ -166,5 +162,6 @@ class cFuncDeclNode : public cDeclNode
         }
 
     private:
-        bool isDefinition;
+        bool m_isDefinition;
+        bool m_hasParams;
 };

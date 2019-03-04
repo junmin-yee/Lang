@@ -69,7 +69,20 @@ class cVarExprNode : public cExprNode
         {
             return GetLastChild()->GetDecl();
         }
-
+        
+        virtual string AttributesToString()
+        {
+            if (m_size == 0 && m_offset == 0) return "";
+            else
+            {
+                string result(" size=\"");
+                result += std::to_string(m_size);
+                result += "\" offset=\"";
+                result += std::to_string(m_offset);
+                result += "\"";
+                return result;
+            }
+        }
         virtual string NodeType() { return string("varref"); }
         virtual void Visit(cVisitor *visitor) { visitor->Visit(this); }
 
@@ -84,10 +97,18 @@ class cVarExprNode : public cExprNode
             }
             return name;
         }
+
+        int GetSize() { return m_size; }
+        void SetSize(int size) { m_size = size; }
+        int GetOffset() { return m_offset; }
+        void SetOffset(int offset) { m_offset = offset; }
         
     protected:
         cSymbol * GetLastChild()
         {
             return dynamic_cast<cSymbol*>(GetChild(NumChildren() - 1));
         }
+
+        int m_size;                 // size of varref
+        int m_offset;               // offset of varref
 };

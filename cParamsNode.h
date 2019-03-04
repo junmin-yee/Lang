@@ -25,7 +25,14 @@ class cParamsNode : public cAstNode
         {
             AddChild(decl);
         }
-
+        
+        virtual string AttributesToString()
+        {
+            string result(" size=\"");
+            result += std::to_string(m_size);
+            result += "\"";
+            return result;
+        }
         virtual string NodeType() { return string("args"); }
         virtual void Visit(cVisitor *visitor) { visitor->Visit(this); }
 
@@ -36,4 +43,10 @@ class cParamsNode : public cAstNode
             if(index >= NumParams()) return nullptr;
             return dynamic_cast<cDeclNode*>(GetChild(index));
         } 
+
+        int GetSize() { return m_size; }
+        void SetSize(int size) { m_size = size; }
+
+    protected:
+        int m_size;         // size of args 
 };
