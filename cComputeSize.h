@@ -115,12 +115,16 @@ class cComputeSize : public cVisitor
             int currentOffset = m_offset;
             int currentHigh = m_highWater;
             m_offset = 0;
+            m_highWater = 0;
             node->SetOffset(m_offset);
 
             VisitAllChildren(node);
             
             if (m_offset % 4 != 0)
                 m_offset += 4 - m_offset % 4;
+
+            if (m_highWater % 4 != 0)
+                m_highWater += 4 - m_highWater % 4;
 
             node->SetSize(m_highWater);
 
