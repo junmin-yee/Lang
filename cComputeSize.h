@@ -17,6 +17,7 @@ class cComputeSize : public cVisitor
         {
             m_offset = 0;
             m_highWater = 0;
+            m_isParams = 0;
         }
 
         virtual void VisitAllNodes(cAstNode *node)
@@ -30,10 +31,12 @@ class cComputeSize : public cVisitor
 
             node->SetSize(node->GetType()->GetSize());
 
-            // If offset is not a char
-            if (node->GetSize() != 1)
+            // If offset is not a char or if from params
+            if (node->GetSize() != 1 || m_isParams == true)
+            {
                 if (m_offset % 4 != 0)
                     m_offset += 4 - m_offset % 4;
+            }
 
             node->SetOffset(m_offset);
             m_offset += node->GetSize();
@@ -47,7 +50,13 @@ class cComputeSize : public cVisitor
             VisitAllChildren(node);
 
             node->SetSize(node->GetDecl()->GetSize());
-            node->SetOffset(node->GetDecl()->GetOffset());
+
+            int totalOffset = 0;
+            for (int i = 0; i < node->NumSymbols(); ++i)
+            {
+                totalOffset += node->GetSymbol(i)->GetDecl()->GetOffset();
+            }
+            node->SetOffset(totalOffset);
         }
 
         virtual void Visit(cDeclsNode *node)
@@ -91,12 +100,14 @@ class cComputeSize : public cVisitor
 
         virtual void Visit(cParamsNode *node)
         {
+            m_isParams = true;
             VisitAllChildren(node);
             
             if (m_offset % 4 != 0)
                 m_offset += 4 - m_offset % 4;
 
             node->SetSize(m_offset);
+            m_isParams = false;
         }
 
         virtual void Visit(cFuncDeclNode *node)
@@ -120,5 +131,7 @@ class cComputeSize : public cVisitor
 
     private:
         int m_offset;           // offset for program
-        int m_highWater;    // high water mark
+        int m_highWater;        // high water mark
+
+        int m_isParams;         // track if decls are from params
 };

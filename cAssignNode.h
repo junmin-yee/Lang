@@ -26,7 +26,7 @@ class cAssignNode : public cStmtNode
         {
             if (!ref->GetDecl()->IsVar())
             {
-                SemanticError(ref->GetDecl()->GetName() + 
+                SemanticError(ref->GetName() + 
                         " is not an lval");
             }
             else if (!CheckAssignmentType(ref, expr))

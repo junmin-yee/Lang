@@ -100,7 +100,7 @@ class cFuncDeclNode : public cDeclNode
                     (params == nullptr && old_params != nullptr) ||
                     (params->NumParams() != old_params->NumParams()))
                 {
-                    string error = GetName() + 
+                    string error = GetFuncName()-> GetName() + 
                         " redeclared with a different number of parameters";
                     SemanticError(error);
                     return;
@@ -128,7 +128,8 @@ class cFuncDeclNode : public cDeclNode
         {
             if (m_isDefinition)
             {
-                SemanticError(GetName() + "already has a definition");
+                SemanticError(GetFuncName()->GetName() + 
+                        "already has a definition");
                 return;
             }
             

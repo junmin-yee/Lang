@@ -60,6 +60,13 @@ class cVarExprNode : public cExprNode
             AddChild(expr);
         }
 
+        int NumSymbols() { return NumChildren(); }
+
+        cSymbol * GetSymbol(int index) 
+        {
+            return dynamic_cast<cSymbol*>(GetChild(index));
+        }
+
         virtual cDeclNode * GetType()
         {
             return GetLastChild()->GetDecl()->GetType();
