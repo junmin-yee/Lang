@@ -17,12 +17,87 @@ class cComputeSize : public cVisitor
         {
             m_offset = 0;
             m_highWater = 0;
-            m_isParams = 0;
+            m_isParams = false;
         }
 
         virtual void VisitAllNodes(cAstNode *node)
         {
             VisitAllChildren(node);
+        }
+        
+        virtual void Visit(cBlockNode *node)
+        {
+            // Save incoming values
+            int incomingHigh = m_highWater;
+            m_highWater = m_offset;
+            int currentHigh = m_highWater;
+            int currentOffset = m_offset;
+
+            VisitAllChildren(node);
+
+            node->SetSize(m_highWater - currentHigh);
+
+            // Reset offset once block is over
+            m_offset = currentOffset;
+
+            // Select highest highwater mark
+            m_highWater = (incomingHigh >= m_highWater)? incomingHigh : m_highWater;
+        }
+
+        virtual void Visit(cDeclsNode *node)
+        {
+            int currentOffset = m_offset;
+            VisitAllChildren(node);
+
+            node->SetSize(m_offset - currentOffset);
+        }
+        
+        virtual void Visit(cFuncDeclNode *node)
+        {
+            // Save incoming values
+            int currentOffset = m_offset;
+            int currentHigh = m_highWater;
+            m_offset = 0;
+            m_highWater = 0;
+            node->SetOffset(m_offset);
+
+            VisitAllChildren(node);
+            
+            m_highWater = RoundUp(m_highWater);
+            node->SetSize(m_highWater);
+
+            // Reset variables once func decl is over
+            m_offset = currentOffset;
+            m_highWater = currentHigh;
+        }
+
+        virtual void Visit(cParamsNode *node)
+        {
+            // Let's children check if coming from params
+            m_isParams = true;
+            VisitAllChildren(node);
+
+            m_offset = RoundUp(m_offset);            
+
+            node->SetSize(m_offset);
+
+            // Reset bool once out of params
+            m_isParams = false;
+        }
+
+        virtual void Visit(cStructDeclNode *node)
+        {
+            // Save and reset offset
+            int currentOffset = m_offset;
+            m_offset = 0;
+            node->SetOffset(m_offset);
+
+            VisitAllChildren(node);
+
+            node->SetSize(m_offset);
+
+            // Reset offset once struct decl is over
+            m_offset = currentOffset;
         }
 
         virtual void Visit(cVarDeclNode *node)
@@ -34,8 +109,7 @@ class cComputeSize : public cVisitor
             // If offset is not a char or if from params
             if (node->GetSize() != 1 || m_isParams == true)
             {
-                if (m_offset % 4 != 0)
-                    m_offset += 4 - m_offset % 4;
+                m_offset = RoundUp(m_offset);
             }
 
             node->SetOffset(m_offset);
@@ -51,6 +125,9 @@ class cComputeSize : public cVisitor
 
             node->SetSize(node->GetDecl()->GetSize());
 
+            // Iterate through each symbol to find each offset
+            // If placed in Visit function for cSymbol,
+            // visiting cSymbol would affect multiple classes
             int totalOffset = 0;
             for (int i = 0; i < node->NumSymbols(); ++i)
             {
@@ -59,83 +136,18 @@ class cComputeSize : public cVisitor
             node->SetOffset(totalOffset);
         }
 
-        virtual void Visit(cDeclsNode *node)
-        {
-            int currentOffset = m_offset;
-            VisitAllChildren(node);
-
-            node->SetSize(m_offset - currentOffset);
-        }
-
-        virtual void Visit(cBlockNode *node)
-        {
-            int incomingHigh = m_highWater;
-            m_highWater = m_offset;
-            int currentHigh = m_highWater;
-            int currentOffset = m_offset;
-            VisitAllChildren(node);
-
-            node->SetSize(m_highWater - currentHigh);
-
-            // Reset offset once block is over
-            m_offset = currentOffset;
-
-            // Select highest highwater mark
-            m_highWater = (incomingHigh >= m_highWater)? incomingHigh : m_highWater;
-        }
-
-        virtual void Visit(cStructDeclNode *node)
-        {
-            int currentOffset = m_offset;
-            m_offset = 0;
-            node->SetOffset(m_offset);
-
-            VisitAllChildren(node);
-
-            node->SetSize(m_offset);
-
-            // Reset offset once struct decl is over
-            m_offset = currentOffset;
-        }
-
-        virtual void Visit(cParamsNode *node)
-        {
-            m_isParams = true;
-            VisitAllChildren(node);
-            
-            if (m_offset % 4 != 0)
-                m_offset += 4 - m_offset % 4;
-
-            node->SetSize(m_offset);
-            m_isParams = false;
-        }
-
-        virtual void Visit(cFuncDeclNode *node)
-        {
-            int currentOffset = m_offset;
-            int currentHigh = m_highWater;
-            m_offset = 0;
-            m_highWater = 0;
-            node->SetOffset(m_offset);
-
-            VisitAllChildren(node);
-            
-            if (m_offset % 4 != 0)
-                m_offset += 4 - m_offset % 4;
-
-            if (m_highWater % 4 != 0)
-                m_highWater += 4 - m_highWater % 4;
-
-            node->SetSize(m_highWater);
-
-            // Reset variables once func decl is over
-            m_offset = currentOffset;
-            m_highWater = currentHigh;
-        }
-
     private:
         int m_offset;           // offset for program
         int m_highWater;        // high water mark
 
         int m_isParams;         // track if decls are from params
+
+        // Word aligns incoming value
+        int RoundUp(int value)
+        {
+            if(value % 4 != 0)
+                value += 4 - value % 4;
+
+            return value;
+        }
 };
