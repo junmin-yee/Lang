@@ -3,10 +3,8 @@
 //
 // Main function for lang compiler
 //
-// Author: Phil Howard 
-// phil.howard@oit.edu
-//
-// Date: Jan. 18, 2015
+// Author: Junmin Yee 
+// Date: Mar. 06, 2019
 //
 
 #include <stdio.h>
@@ -18,6 +16,7 @@
 #include "astnodes.h"
 #include "langparse.h"
 #include "cComputeSize.h"
+#include "cCodeGen.h"
 
 // define global variables
 cSymbolTable g_SymbolTable;
@@ -28,9 +27,8 @@ int main(int argc, char **argv)
 {
     std::cout << "Junmin Yee" << std::endl;
 
-    const char *outfile_name;
+    std::string outfile_name;
     int result = 0;
-    std::streambuf *cout_buf = std::cout.rdbuf();
 
     if (argc > 1)
     {
@@ -46,18 +44,10 @@ int main(int argc, char **argv)
     {
         outfile_name = argv[2];
     } else {
-        outfile_name = "/dev/tty";
+        outfile_name = "langout";
     }
 
-    std::ofstream output(outfile_name);
-    if (!output.is_open())
-    {
-        std::cerr << "ERROR: Unable to open file " << outfile_name << "\n";
-        exit(-1);
-    }
-
-    // fixup cout so it redirects to output
-    std::cout.rdbuf(output.rdbuf());
+    g_SymbolTable.InitRootTable();
 
     result = yyparse();
     if (yyast_root != nullptr)
@@ -66,22 +56,33 @@ int main(int argc, char **argv)
         {
             cComputeSize sizer;
             sizer.VisitAllNodes(yyast_root);
-            
-            output << yyast_root->ToString() << std::endl;
+
+            //output << yyast_root->ToString() << std::endl;
+
+            // need to make the coder go out of scope before assembling
+            {
+                cCodeGen coder(outfile_name + ".sl");
+                coder.VisitAllNodes(yyast_root);
+            }
+
+            string cmd = "slasm " + outfile_name + ".sl io320.sl";
+            system(cmd.c_str());
         } else {
-            output << yynerrs << " Errors in compile\n";
+            std::cerr << yynerrs << " Errors in compile\n";
         }
     }
 
     if (result == 0 && yylex() != 0)
     {
-        std::cout << "Junk at end of program\n";
+        std::cerr << "Junk at end of program\n";
     }
 
+    /*
     // close output and fixup cout
     // If these aren't done, you may get a segfault on program exit
     output.close();
     std::cout.rdbuf(cout_buf);
+    */
 
     return result;
 }

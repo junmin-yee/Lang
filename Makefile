@@ -14,7 +14,8 @@ OBJS=main.o \
 	 langparse.o \
 	 cVisitor.o \
 	 cSymbolTable.o \
-	 symbolTable_t.o 
+	 symbolTable_t.o \
+	 emit.o 
 
 all: lang
 
