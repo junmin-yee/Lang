@@ -121,8 +121,6 @@ class cComputeSize : public cVisitor
 
         virtual void Visit(cVarExprNode *node)
         {
-            VisitAllChildren(node);
-
             node->SetSize(node->GetDecl()->GetSize());
 
             // Iterate through each symbol to find each offset

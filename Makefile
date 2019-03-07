@@ -25,8 +25,10 @@ clean:
 	rm -f langparse.c
 	rm -f langparse.h
 	rm -f lang
-	rm -f out.xml
-	rm -f out2.xml
+	rm -f out
+	rm -f langout.lst
+	rm -f langout.sl
+	rm -f langout.slb
 
 .cpp.o:
 	g++ $(COPTS) $? -o $@

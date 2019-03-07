@@ -33,14 +33,14 @@ class cIfNode : public cStmtNode
         virtual void Visit(cVisitor *visitor) { visitor->Visit(this); }
         cExprNode *GetExpr()
         {
-            return static_cast<cExprNode*>(GetChild(0));
+            return dynamic_cast<cExprNode*>(GetChild(0));
         }
         cStmtsNode *GetIfStmts()
         {
-            return static_cast<cStmtsNode*>(GetChild(1));
+            return dynamic_cast<cStmtsNode*>(GetChild(1));
         }
         cStmtsNode *GetElseStmts()
         {
-            return static_cast<cStmtsNode*>(GetChild(2));
+            return dynamic_cast<cStmtsNode*>(GetChild(2));
         }
 };

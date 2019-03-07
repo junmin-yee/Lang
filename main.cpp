@@ -47,8 +47,6 @@ int main(int argc, char **argv)
         outfile_name = "langout";
     }
 
-    g_SymbolTable.InitRootTable();
-
     result = yyparse();
     if (yyast_root != nullptr)
     {

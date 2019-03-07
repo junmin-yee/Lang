@@ -10,6 +10,9 @@
 // Author: Phil Howard 
 // phil.howard@oit.edu
 //
+// Edited By: Junmin Yee
+// Date: Mar. 07, 2019
+//
 
 #include "cAstNode.h"
 #include "cStmtNode.h"
@@ -26,4 +29,6 @@ class cPrintNode : public cStmtNode
 
         virtual string NodeType() { return string("print"); }
         virtual void Visit(cVisitor *visitor) { visitor->Visit(this); }
+
+        cExprNode * GetExpr() { return dynamic_cast<cExprNode*>(GetChild(0)); }
 };

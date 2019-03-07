@@ -52,7 +52,7 @@ std::string GenerateLabel()
 // write an integer constant to the output
 void EmitInt(int val)
 {
-    fprintf(Output, " %d ", val);
+    fprintf(Output, " %d\n", val);
 }
 //*****************************************
 void EmitString(std::string str)
