@@ -42,13 +42,14 @@ class cBlockNode : public cStmtNode
         }
         virtual string NodeType() { return string("block"); }
         virtual void Visit(cVisitor *visitor) { visitor->Visit(this); }
+
         cDeclsNode *GetDecls()
         {
-            return static_cast<cDeclsNode*>(GetChild(0));
+            return dynamic_cast<cDeclsNode*>(GetChild(0));
         }
         cStmtsNode *GetStmts()
         {
-            return static_cast<cStmtsNode*>(GetChild(1));
+            return dynamic_cast<cStmtsNode*>(GetChild(1));
         }
 
         int GetSize() { return m_size; }

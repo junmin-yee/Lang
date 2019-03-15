@@ -30,6 +30,23 @@ class cCodeGen : public cVisitor
             node->Visit(this);
         }
 
+        virtual void Visit(cAssignNode *node)
+        {
+            node->GetRight()->Visit(this);
+            
+            // Save to memory location
+            if(node->GetLeft()->GetSize() == 1)
+            {
+                EmitString("POPCVAR");
+                EmitInt(node->GetLeft()->GetOffset());
+            }
+            else
+            {
+                EmitString("POPVAR");
+                EmitInt(node->GetLeft()->GetOffset());
+            }
+        }
+
         virtual void Visit(cBinaryExprNode *node)
         {
             node->GetExprLeft()->Visit(this);
@@ -81,7 +98,10 @@ class cCodeGen : public cVisitor
 
             // Else block
             EmitString(elselabel + ":\n");
-            node->GetElseStmts()->Visit(this);
+            if (node->GetElseStmts() != nullptr)
+            {
+                node->GetElseStmts()->Visit(this);
+            }
 
             // End of if stmt
             EmitString(endiflabel + ":\n");
@@ -89,7 +109,7 @@ class cCodeGen : public cVisitor
 
         virtual void Visit(cIntExprNode *node)
         {
-            EmitString("PUSH ");
+            EmitString("PUSH");
             EmitInt(node->GetValue());
         }
 
@@ -104,6 +124,44 @@ class cCodeGen : public cVisitor
         virtual void Visit(cProgramNode *node)
         {
             EmitString("main:\n");
+            EmitString("ADJSP");
+            int temp = node->GetBlock()->GetSize();
+            if (temp % 4 != 0)
+                temp += 4 - temp % 4;
+            EmitInt(temp);
             VisitAllChildren(node);
+        }
+
+        virtual void Visit(cVarExprNode *node)
+        {
+            if(node->GetSize() == 1) // If char
+            {
+                EmitString("PUSHCVAR");
+                EmitInt(node->GetOffset());
+            }
+            else // If int
+            {
+                EmitString("PUSHVAR");
+                EmitInt(node->GetOffset());
+            }
+        }
+
+        virtual void Visit(cWhileNode *node)
+        {
+            string looplabel = GenerateLabel();
+            string endlooplabel = GenerateLabel();
+
+            EmitString(looplabel + ":\n");
+
+            // Evaluate expression
+            node->GetExpr()->Visit(this);
+
+            // If condition fails, end loop
+            EmitString("JUMPE @" + endlooplabel + "\n");
+
+            node->GetStmt()->Visit(this);
+            EmitString("JUMP @" + looplabel + "\n");
+
+            EmitString(endlooplabel + ":\n");
         }
 };

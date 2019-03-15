@@ -22,4 +22,9 @@ class cProgramNode : public cAstNode
 
         virtual string NodeType() { return string("program"); }
         virtual void Visit(cVisitor *visitor) { visitor->Visit(this); }
+
+        cBlockNode* GetBlock()
+        {
+            return dynamic_cast<cBlockNode*>(GetChild(0));
+        }
 };
