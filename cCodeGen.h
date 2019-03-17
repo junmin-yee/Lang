@@ -102,7 +102,7 @@ class cCodeGen : public cVisitor
 
         virtual void Visit(cFuncExprNode *node)
         {
-            // If there are params
+            // If there are params, push on stack
             if (node->GetParamList() != nullptr)
                 node->GetParamList()->Visit(this);
             EmitString("CALL @" + node->GetFuncName()->GetName() + "\n");
@@ -146,6 +146,7 @@ class cCodeGen : public cVisitor
 
         virtual void Visit(cParamListNode *node)
         {
+            // Visit right to left
             for (int i = node->NumParams() - 1; i >= 0; --i)
             {
                 node->GetExpr(i)->Visit(this);
@@ -212,6 +213,8 @@ class cCodeGen : public cVisitor
             EmitString("JUMPE @" + endlooplabel + "\n");
 
             node->GetStmt()->Visit(this);
+
+            // Go back to start of loop
             EmitString("JUMP @" + looplabel + "\n");
 
             EmitString(endlooplabel + ":\n");
