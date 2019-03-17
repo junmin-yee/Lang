@@ -71,6 +71,11 @@ class cFuncExprNode : public cExprNode
 
         cSymbol *GetFuncName()
         {
-            return static_cast<cSymbol*>(GetChild(0));
+            return dynamic_cast<cSymbol*>(GetChild(0));
+        }
+        
+        cParamListNode * GetParamList()
+        {
+            return dynamic_cast<cParamListNode*>(GetChild(1));
         }
 };

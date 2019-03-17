@@ -83,6 +83,37 @@ class cCodeGen : public cVisitor
             }
         }
 
+        virtual void Visit(cFuncDeclNode *node)
+        {
+            // Only generate code if node is a definition
+            if (node->IsDefinition())
+            {
+                // Function label
+                EmitString(node->GetFuncName()->GetName() + ":\n");
+
+                if (node->GetParams() != nullptr)
+                {
+                    EmitString("ADJSP");
+                    EmitInt(node->GetParams()->GetSize());
+                }
+                VisitAllChildren(node);
+            }
+        }
+
+        virtual void Visit(cFuncExprNode *node)
+        {
+            // If there are params
+            if (node->GetParamList() != nullptr)
+                node->GetParamList()->Visit(this);
+            EmitString("CALL @" + node->GetFuncName()->GetName() + "\n");
+
+            if (node->GetParamList() != nullptr)
+            {
+                EmitString("POPARGS");
+                EmitInt(node->GetParamList()->NumParams() * 4);
+            }
+        }
+
         virtual void Visit(cIfNode *node)
         {
             node->GetExpr()->Visit(this);
@@ -113,6 +144,14 @@ class cCodeGen : public cVisitor
             EmitInt(node->GetValue());
         }
 
+        virtual void Visit(cParamListNode *node)
+        {
+            for (int i = node->NumParams() - 1; i >= 0; --i)
+            {
+                node->GetExpr(i)->Visit(this);
+            }
+        }
+
         virtual void Visit(cPrintNode *node)
         {
             node->GetExpr()->Visit(this);
@@ -123,13 +162,26 @@ class cCodeGen : public cVisitor
 
         virtual void Visit(cProgramNode *node)
         {
+            // Visit decls to generate func decls if necessary
+            if (node->GetBlock()->GetDecls() != nullptr)
+                node->GetBlock()->GetDecls()->Visit(this);
+
             EmitString("main:\n");
             EmitString("ADJSP");
             int temp = node->GetBlock()->GetSize();
             if (temp % 4 != 0)
                 temp += 4 - temp % 4;
             EmitInt(temp);
-            VisitAllChildren(node);
+            
+            // Visit rest of block
+            if (node->GetBlock()->GetStmts() != nullptr)
+                node->GetBlock()->GetStmts()->Visit(this);
+        }
+
+        virtual void Visit(cReturnNode *node)
+        {
+            node->GetExpr()->Visit(this);
+            EmitString("RETURNV\n");
         }
 
         virtual void Visit(cVarExprNode *node)

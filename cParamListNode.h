@@ -30,4 +30,9 @@ class cParamListNode : public cAstNode
         virtual void Visit(cVisitor *visitor) { visitor->Visit(this); }
 
         int NumParams() { return NumChildren(); }
+
+        cExprNode * GetExpr(int index)
+        {
+            return dynamic_cast<cExprNode*>(GetChild(index));
+        }
 };

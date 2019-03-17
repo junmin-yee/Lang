@@ -17,7 +17,6 @@ class cComputeSize : public cVisitor
         {
             m_offset = 0;
             m_highWater = 0;
-            m_isParams = false;
         }
 
         virtual void VisitAllNodes(cAstNode *node)
@@ -73,16 +72,25 @@ class cComputeSize : public cVisitor
 
         virtual void Visit(cParamsNode *node)
         {
-            // Let's children check if coming from params
-            m_isParams = true;
-            VisitAllChildren(node);
+            // Stack overhead
+            m_offset = -12;
 
-            m_offset = RoundUp(m_offset);            
+            // Need to loop because in other direction
+            for (int i = 0; i < node->NumParams(); ++i)
+            {
+                cDeclNode * param = node->GetDecl(i);
+                param->SetSize(param->GetType()->GetSize());
+                param->SetOffset(m_offset);
 
-            node->SetSize(m_offset);
+                m_offset -= param->GetSize();
+                m_offset = RoundDown(m_offset);
+            }
 
-            // Reset bool once out of params
-            m_isParams = false;
+            // Compute size based on call stack overhead
+            node->SetSize(-12 - m_offset);
+
+            // Reset offset for function locals
+            m_offset = 0;
         }
 
         virtual void Visit(cStructDeclNode *node)
@@ -107,7 +115,7 @@ class cComputeSize : public cVisitor
             node->SetSize(node->GetType()->GetSize());
 
             // If offset is not a char or if from params
-            if (node->GetSize() != 1 || m_isParams == true)
+            if (node->GetSize() != 1)
             {
                 m_offset = RoundUp(m_offset);
             }
@@ -138,13 +146,20 @@ class cComputeSize : public cVisitor
         int m_offset;           // offset for program
         int m_highWater;        // high water mark
 
-        int m_isParams;         // track if decls are from params
-
         // Word aligns incoming value
         int RoundUp(int value)
         {
             if(value % 4 != 0)
                 value += 4 - value % 4;
+
+            return value;
+        }
+
+        // Word aligns incoming values for negative stack addresses
+        int RoundDown(int value)
+        {
+            if(value % 4 != 0)
+                value -= 4 + value % 4;
 
             return value;
         }
