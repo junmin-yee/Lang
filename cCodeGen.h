@@ -91,10 +91,10 @@ class cCodeGen : public cVisitor
                 // Function label
                 EmitString(node->GetFuncName()->GetName() + ":\n");
 
-                if (node->GetParams() != nullptr)
+                if (node->GetDecls() != nullptr)
                 {
                     EmitString("ADJSP");
-                    EmitInt(node->GetParams()->GetSize());
+                    EmitInt(node->GetDecls()->GetSize());
                 }
                 VisitAllChildren(node);
             }
